@@ -30,4 +30,7 @@ def create_app(config_name):
     from .prospects import prospects as prospects_blueprint
     app.register_blueprint(prospects_blueprint)
 
+    from .maps import maps as maps_blueprint
+    app.register_blueprint(maps_blueprint)
+
     return app
