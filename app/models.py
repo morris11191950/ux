@@ -62,6 +62,38 @@ class Queries():
         return json_refs
 
 #######################################################################
+# DEPOSITS BY DISTRICT
+######################################################################
+    def deposits_by_district(self, district_id):
+        json_refs = []
+        cursor = self.conn.cursor()
+        sql = """SELECT d.deposit_id, d.deposit_name,
+                d.latitude, d.longitude, s.state,
+                c1.country, c2.county, dis.district_name
+            FROM deposit d
+            INNER JOIN district_to_deposit dd
+                ON dd.deposit_id = d.deposit_id
+            INNER JOIN district dis ON dis.district_id = dd.district_id
+            LEFT JOIN state s ON s.state_id = d.state_id
+            INNER JOIN country c1 ON c1.country_id = d.country_id
+            LEFT JOIN county c2 ON c2.county_id = d.county_id
+            WHERE (dd.district_id = %s AND dd.verified = 'y')
+            ORDER BY d.deposit_id """
+        cursor.execute(sql, district_id)
+        self.conn.close()
+        rows = cursor.fetchall()
+        #Convert to JSON format
+        for row in rows:
+            json_ref = {'deposit_id':row[0], 'deposit_name':row[1],
+                'latitude':row[2], 'longitude':row[3],
+                'state':row[4], 'country':row[5], 'county':row[6],
+                'district_name':row[7]}
+            json_refs.append(json_ref)
+            json_ref = {}
+
+        return json_refs
+
+#######################################################################
 # REFERENCES BY DISTRICT AND CATEGORY SELECTION
 ######################################################################
     def references_by_district(self, district_id):

@@ -47,23 +47,23 @@ input[type=submit] { align-self: flex-start;; min-width: 10em; }
 /* ********************************************************************
                LITERATURE BUTTONS AND DROPDOWNS
 **********************************************************************/
-#references_container {background-color: lightgray; position: fixed;
+#base2_container {background-color: lightgray; position: fixed;
      width: 100%; top: 33px; left: 0; font-family: helvetica;
      z-index: 6}
-#references_container select, input {display: inline; font-size: 14pt;
+#base2_container select, input {display: inline; font-size: 14pt;
      margin: 0; padding: 0; top: 0; width: 15%;
      background-color: lightgray; color: #377ba8; border-style: solid;
      border-color: silver;}
 
-#references_menu {display: flex;}
-#references_menu button {font-size: 14pt; font-family: helvetica;
+#base2_menu {display: flex;}
+#base2_menu button {font-size: 14pt; font-family: helvetica;
      width: 15%; background-color: lightgray; color: #377ba8;
      border-style: solid; border-color: silver; text-align: left;}
 
 /* ********************************************************************
           EXPANDING SEARCH BAR
 ***********************************************************************/
-#references_search {
+#base2_search {
     width: 3%;
     height: auto;
     background-image: url('../img/search_icon.png');
@@ -78,12 +78,12 @@ input[type=submit] { align-self: flex-start;; min-width: 10em; }
     color: black;
 }
 
-#references_search[type=text]:focus {width: 50%; background-color: white;}
+#base2_search[type=text]:focus {width: 50%; background-color: white;}
 
-#references_container button:hover,
+#base2_container button:hover,
 #button_new_ref:hover,
 #nav_list a:hover,
-#references_container select:hover {
+#base2_container select:hover {
     background-color: #666;
     color: white;
 }
@@ -283,7 +283,10 @@ input[type=submit] { align-self: flex-start;; min-width: 10em; }
           CESIUM MAPS
 ***********************************************************************/
 #cesiumContainer {
-          width: 100%; height: 100%; margin: 0; padding:0; overflow: hidden;
+          position: absolute;
+          top: 100px;
+          width: 100%; height: 100%; margin: 0;
+          padding:0; overflow: hidden;
       }
 
 

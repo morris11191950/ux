@@ -1,46 +1,153 @@
 {% extends 'base.html' %}
 
 {% block title %}
-     - Maps
+     Maps
 {% endblock %}
 
 {% block subject %}
-     <span id="title_tp">Maps</span>
+     <span id="title1">Maps</span>
 {% endblock %}
 
 {% block body %}
 
+<input type="text" style="display:none" id="refresh" value="no">
+
+<!-- *****************************************************************
+     DROP DOWN FOR DISTRICTS
+***************************************************************** -->
+<div id="base2_container">
+     <div id="base2_menu" >
+          <select class="btn" id="button_districts_map">
+               <option value="Start">By District</option></select>
+     </div>
+</div>
+
 <div id="cesiumContainer"></div>
-  <script>
-      var lats = [38.19029, 38.25777, 38.1261]
-      var lons = [-109.25679, -109.28347, -109.1718]
-      var deposits = ['Mi Vida', 'North Alice', 'Velvet']
 
-      Cesium.Ion.defaultAccessToken = '{{CESIUM_API_KEY}}';
-      var viewer = new Cesium.Viewer('cesiumContainer');
+<script>
 
-      for (var i = 0; i < deposits.length; i++) {
-           var miVida = viewer.entities.add({
-               name : deposits[i],
-               position : Cesium.Cartesian3.fromDegrees(lons[i], lats[i]),
-               point : {
-                   pixelSize : 5,
-                   color : Cesium.Color.RED,
-                   outlineColor : Cesium.Color.WHITE,
-                   outlineWidth : 2
-               },
-               label : {
-                   text : deposits[i],
-                   font : '14pt monospace',
-                   style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-                   outlineWidth : 2,
-                   verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
-                   pixelOffset : new Cesium.Cartesian2(0, -9)
-               }
-           });
-       }
+$(document).ready(function() {
 
-       viewer.zoomTo(viewer.entities);
- </script>
+//*************************************************************
+//   BY_DISTRICT SELECTION
+//*************************************************************
+$("#button_districts_map").change(function() {
+     var selected_id = $(this).children("option:selected").val();
+     //console.log('selected_id', selected_id);
+     doAjax_deposits_by_district(selected_id)
+});
+
+//*************************************************************
+//   BY_DISTRICT BUTTON: ACTIVATES DROPDOWN OF ALL DISTRICTS
+//*************************************************************
+$("#button_districts_map").click(function() {
+     //console.log('map');
+     doAjax_districts_map();
+});
+
+//*************************************************************
+//AJAX CALL TO RETRIEVE DISTRICTS AND DISPLAY THEM
+//*************************************************************
+var doAjax_districts_map = function() {
+
+     $.ajax({
+        type: "GET",
+        url: "http://127.0.0.1:5000/districts_all",
+        success: function(data) {
+             objects = JSON.parse(data.Districts)
+             $.each(objects, function(i, object) {
+                  $temp = "<option " + "value="  + object.district_id + ">"
+                       + object.district_name + '</option>'
+                  $('#button_districts_map').append($temp);
+             });
+          }
+      });
+ };
+
+});
+
+//*************************************************************
+//AJAX CALL TO RETRIEVE DEPOSIT COORDS FOR SELECTED DISTRICT,
+//*************************************************************
+var doAjax_deposits_by_district = function(inputValue) {
+     //console.log("inputValue ", inputValue);
+     var deposit_ids = []
+     var deposit_names = []
+     var lats = []
+     var lons = []
+     var labels = []
+     var descriptions = []
+
+     $.ajax({
+        type: "GET",
+        url: "http://127.0.0.1:5000/deposits_by_district/" + inputValue,
+        success: function(data) {
+            objects = JSON.parse(data.Deposits)
+            $.each(objects, function(i, object) {
+                  country = object.country
+                  console.log('country ', country)
+                  county = object.county
+                  deposit_id = JSON.stringify(object.deposit_id)
+                  deposit_name = object.deposit_name
+                  district_name = object.district_name
+                  state = object.state
+                  description = country
+                  if (state) {
+                     description =  state + ', ' + description
+                  }
+                  if (county) {
+                     description =  county + ' County, ' + description
+                  }
+
+                  label = deposit_id + ': ' + deposit_name +
+                    ': ' + district_name
+
+                  deposit_ids.push(deposit_id);
+                  deposit_names.push(deposit_name);
+                  descriptions.push(description)
+                  lats.push(object.latitude);
+                  lons.push(object.longitude);
+                  labels.push(label);
+
+                  //states.push(state)
+
+            });
+        },
+         complete: function(){
+
+             $('#cesiumContainer').empty()
+
+             Cesium.Ion.defaultAccessToken = '{{CESIUM_API_KEY}}';
+             var viewer = new Cesium.Viewer('cesiumContainer');
+
+             for (var i = 0; i < deposit_names.length; i++) {
+                  var myDistrict = viewer.entities.add({
+                      name : labels[i],
+                      position : Cesium.Cartesian3.fromDegrees(lons[i], lats[i]),
+                      point : {
+                          pixelSize : 5,
+                          color : Cesium.Color.RED,
+                          outlineColor : Cesium.Color.WHITE,
+                          outlineWidth : 2
+                      },
+                      description: descriptions[i],
+                      label : {
+                          text : deposit_ids[i],
+                          font : '14pt monospace',
+                          style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                          outlineWidth : 2,
+                          verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
+                          pixelOffset : new Cesium.Cartesian2(0, -9)
+                      }
+                  });
+              }
+
+             viewer.zoomTo(viewer.entities);
+
+         }
+      });
+ };
+
+</script>
 
 {% endblock %}

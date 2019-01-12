@@ -15,8 +15,8 @@
 <!-- *****************************************************************
 BUTTONS FOR MAIN LITERATURE VIEW
 ***************************************************************** -->
-<div id="references_container">
-     <div id="references_menu" >
+<div id="base2_container">
+     <div id="base2_menu" >
           <button class="btn" id="button_references_all">All Literature</button>
           <select class="btn" id="button_districts">
                <option value="Start">By District</option></select>
@@ -24,7 +24,7 @@ BUTTONS FOR MAIN LITERATURE VIEW
                <option value="Start">By Category</option></select>
           <input class="btn" type='image' id="button_new_ref"
                src = 'static/img/plus_icon_26x26.png'>
-          <input class="btn" type="text" name="name" id="references_search">
+          <input class="btn" type="text" name="name" id="base2_search">
      </div>
 </div>
 
@@ -63,7 +63,7 @@ $input.val() == 'yes' ? location.reload() : $input.val('yes');
 //*************************************************************
 //   INITIALIZE VARS
 //*************************************************************
-var header = document.getElementById("references_menu");
+var header = document.getElementById("base2_menu");
 var btns = header.getElementsByClassName("btn");
 var $dist_on = "no";
 var $cat_on = "no";
@@ -73,8 +73,8 @@ var $usrFrag = "";
 //*************************************************************
 //   CLICK ON SEARCH
 //*************************************************************
-$("#references_search").click(function() {
-     document.getElementById("references_search").placeholder =
+$("#base2_search").click(function() {
+     document.getElementById("base2_search").placeholder =
           "Up to 3 comma-separated strings, e.g. chinle,uran,utah";
 });
 
