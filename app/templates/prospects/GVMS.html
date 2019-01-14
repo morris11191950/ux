@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}
+     - GVMS
+{% endblock %}
+
+{% block subject %}
+     <span id="title_p">GVMS</span>
+{% endblock %}
+
+{% block body %}
+
+<div id="GVMS"></div>
+
+<script>
+
+$(document).ready(function() {
+
+//*************************************************************
+//AJAX CALL TO GVMS PROSPECT TEXT
+//*************************************************************
+$(function () {
+
+     var doAjax_GVMS = {
+     init: function() {
+          $.ajax({
+             url: "{{ url_for('static', filename='txt/GVMS_text.html') }}",
+             async: true,
+             success: function(data) {
+                  $('#GVMS').html(data);
+             }
+      });
+     }
+   };
+   doAjax_GVMS.init();
+});
+
+});
+
+ </script>
+
+{% endblock %}

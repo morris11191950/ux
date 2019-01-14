@@ -34,7 +34,7 @@ $(document).ready(function() {
 $("#button_districts_map").change(function() {
      var selected_id = $(this).children("option:selected").val();
      //console.log('selected_id', selected_id);
-     doAjax_deposits_by_district(selected_id)
+     doAjax_deposits_by_district(selected_id);
 });
 
 //*************************************************************
@@ -64,7 +64,7 @@ var doAjax_districts_map = function() {
       });
  };
 
-});
+//});
 
 //*************************************************************
 //AJAX CALL TO RETRIEVE DEPOSIT COORDS FOR SELECTED DISTRICT,
@@ -147,6 +147,8 @@ var doAjax_deposits_by_district = function(inputValue) {
          }
       });
  };
+
+ });
 
 </script>
 

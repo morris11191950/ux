@@ -13,6 +13,7 @@ venv
 
 app/static/pdfs
 app/static/img
+app/static/txt
 
 .DS_Store
 

@@ -289,7 +289,6 @@ input[type=submit] { align-self: flex-start;; min-width: 10em; }
           padding:0; overflow: hidden;
       }
 
-
 /* ********************************************************************
           MISCELLANEOUS
 ***********************************************************************/
@@ -308,3 +307,29 @@ input[type=submit] { align-self: flex-start;; min-width: 10em; }
     display: block;}
 .all-content li:hover {background-color: #f1f1f1}
 .show {display:block;}
+
+/* ********************************************************************
+          PROSPECTS BUTTONS
+***********************************************************************/
+.grid-container {
+  display: grid;
+  grid-template-columns: auto auto auto ;
+  grid-row-gap: 12px;
+  grid-column-gap: 10px;
+  background-color: #2196F3;
+  padding: 10px;
+  margin-right:20px;
+}
+
+.grid-container > button {
+  background-color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  padding: 20px 0;
+  font-size: 30px;
+  border-radius: 10px;
+}
+
+button[type=button]:disabled {
+     background-color: #dddddd;
+     color: #999999;
+}
