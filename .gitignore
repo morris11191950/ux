@@ -11,10 +11,11 @@ build/
 
 venv
 
-app/static/pdfs
-app/static/img
-app/static/txt
+app/static/
+prospects/
 
 .DS_Store
 
 instance/
+
+config.py

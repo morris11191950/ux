@@ -49,7 +49,7 @@ class Queries():
         cursor = self.conn.cursor()
         sql = """SELECT reference_id, reference, filename, url
             FROM reference
-            ORDER BY reference LIMIT 200"""
+            ORDER BY reference """
         cursor.execute(sql)
         self.conn.close()
         rows = cursor.fetchall()
@@ -225,6 +225,7 @@ class Queries():
             json_refs.append(json_ref)
             json_ref = {}
         return json_refs
+
     #######################################
     # EDIT - UPDATE DATABASE
     #######################################

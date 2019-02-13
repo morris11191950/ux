@@ -22,9 +22,10 @@ BUTTONS FOR MAIN LITERATURE VIEW
                <option value="Start">By District</option></select>
           <select class="btn" id="button_categories">
                <option value="Start">By Category</option></select>
-          <input class="btn" type='image' id="button_new_ref"
-               src = 'static/img/plus_icon_26x26.png'>
-          <input class="btn" type="text" name="name" id="base2_search">
+          <button class="btn2" id="button_new_ref"><i class="fa fa-plus"></i></button>
+          <!-- <input class="btn2" type='image' id="button_new_ref"
+               src = 'static/img/plus_icon_26x26.png'> -->
+          <input type="text" name="name" id="base2_search">
      </div>
 </div>
 
@@ -54,7 +55,7 @@ LOADING PROGRESS ICON
 $(document).ready(function() {
 
 //*************************************************************
-//   THIS REFRESHES PAGE, OTHERWISE HEADERS DO NOT DISPLYA
+//   THIS REFRESHES PAGE, OTHERWISE HEADERS DO NOT DISPLAY
 //   AFTER WEB BACK ARROW USED FROM EDIT PAGE
 //*************************************************************
 var $input = $('#refresh');

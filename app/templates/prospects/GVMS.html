@@ -10,9 +10,26 @@
 
 {% block body %}
 
-<div id="GVMS"></div>
+<div class="prospect_describe">
 
-<script>
+     <h1> Gypsum Valley - Three States Prospect </h1>
+     <div id="GVMS"></div>
+          <p>The Gypsum Valley - Three States Prospect (The Prospect) is located on the southwest flank of the Gypsum Valley Salt Anticline in southwest Colorado. The ore target is the Moss Back Member of the Triassic Chinle Formation. The Mossback Member lies unconformably on the Permian Cutler Formation. The Triassic Moenkopi formation that was deposited regionally between the Cutler and Mossback is absent at the Prospect. This unconformity is believed to have played a central role in the deposition of the large Lisbon Valley uranium ore district. Lisbon Valley holds one of the largest uranium ore districts in the United States exceeding 60 million pounds of uranium production.
+
+          The geologic structure and stratigraphy of the southwest flank of Gypsum Valley is remarkably similar to that of Lisbon Valley. Several moderately sized uranium ore bodies have been discovered in the shallow Salt Wash Member of the Morrison formation along Gypsum Valley; however, no ore has been discovered in the Chinle at Gypsum Valley. Minimal exploration for Chinle ore has been conducted at Gypsum Valley largely because the Chinle targets are in excess of 2000 feet and the Moss Back Member is thought to be thin and unfavorable, lithologically, for uranium deposition.
+
+          The rationale for the Prospect centers around the stratigraphy in the Three States Natural Gas South Gypsum Valley Unit # 1 well (Three States Well) logged March 9, 1959. The stratigraphy near the Three States Well is complex due to its location on the southwest flank of the Gypsum Valley anticline where beds have been upturned nearly vertical by the rising salt. Beds differ in thickness by thousands of feet over horizontal distances of less than 1000 feet. Thus, the geologic formation contacts are difficult to sort out even with the extensive set of geophysical logs available from the Three States well, and drill cuttings. According Shawe et al. (1968), the base of the Chinle is at 2,370 feet and directly overlays the Cutler Formation with no intervening Moenkopi. The Chinle is ?? feet thick regionally but only 170 feet thick in the Three States Well, probably due non-deposition over the rising salt.  Regionally, the Prospect is near the northeast boundary of favorable Moss Back as defined by (?). Examination of  well cuttings from the Three States Well shows that Moss Back may be present at this location. Cutting contain calcareous granules, and green, chemically reduced sandstone typical of Moss Back.
+
+          About 12 miles due west of the Prospect in Summit Canyon, shallow drilling described by Shawe et al. (1968, Plate 2) shows Moss Back directly overlaying Cutler. In an area that was not drilled, they project the top of a Cutler sandstone unit subcropping the Moss Back with angular unconformity. Shawe et al.(1968)indicate that the Slick Rock area is favorable for undiscovered uranium deposits in the Chinle, partly because it likely has a Moss Back Member with similar lithology to that at Lisbon Valley.The Gypsum Valley Anticline is immediately northeast of Shawe's Slickrock District.
+
+          In summary, the Lisbon Valley uranium ore district and the Gypsum Valley Prospect are located on the southwest flank of large Salt Anticlines, The trend of the Lisbon Valley and Gypsum Valley anticlines parallel each other, are oriented northwest-southeast and about 35 miles apart. At the Prospect, Cutler Formation directly underlies Chinle with angular unconformity reminiscent of the geometry at the Lisbon Valley ore district.  Stratigraphy in the Three States Well and regional trends indicate that favorable Moss Back may be present in the area.</p>
+     <div>
+          <img id="X_SECT1" src="{{url_for('static', filename='img/Lisbon_full.png')}}" />
+          <img id="X_SECT2" src="{{url_for('static', filename='img/gyp_val_full.png')}}" />
+     </div>
+</div>
+
+<!-- <script>
 
 $(document).ready(function() {
 
@@ -24,7 +41,7 @@ $(function () {
      var doAjax_GVMS = {
      init: function() {
           $.ajax({
-             url: "{{ url_for('static', filename='txt/GVMS_text.html') }}",
+             url: "{{ url_for('static', filename='txt/GV.txt') }}",
              async: true,
              success: function(data) {
                   $('#GVMS').html(data);
@@ -37,6 +54,6 @@ $(function () {
 
 });
 
- </script>
+ </script> -->
 
 {% endblock %}

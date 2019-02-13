@@ -2,7 +2,7 @@
 html {height: 100%;
      width: 100%; }
 
-body {top:1.4em;
+body {top:1.8em;
      height: 100%;
      width: 100%;
      padding:0.5em;
@@ -56,16 +56,40 @@ input[type=submit] { align-self: flex-start;; min-width: 10em; }
      border-color: silver;}
 
 #base2_menu {display: flex;}
-#base2_menu button {font-size: 14pt; font-family: helvetica;
+/* #base2_menu button {font-size: 14pt; font-family: helvetica;
      width: 15%; background-color: lightgray; color: #377ba8;
-     border-style: solid; border-color: silver; text-align: left;}
+     border-style: solid; border-color: silver; text-align: left;} */
+
+.btn {
+     font-size: 14pt;
+     font-family: helvetica;
+     width: 15%;
+     background-color: lightgray;
+     color: #377ba8;
+     border-style: solid;
+     border-color: silver;
+     text-align: left;
+}
+
+.btn2 {
+  background-color: lightgray;
+  border: none;
+  color: #377ba8;
+  padding: 12px 16px;
+  font-size: 14px;
+  cursor: pointer;
+}
+/* Darker background on mouse-over
+.btn2:hover {
+  background-color: RoyalBlue;
+} */
 
 /* ********************************************************************
           EXPANDING SEARCH BAR
 ***********************************************************************/
 #base2_search {
     width: 3%;
-    height: auto;
+    height: 40px;
     background-image: url('../img/search_icon.png');
     background-position: right center;
     background-repeat: no-repeat;
@@ -88,10 +112,10 @@ input[type=submit] { align-self: flex-start;; min-width: 10em; }
     color: white;
 }
 
-#button_new_ref {
+/* #button_new_ref {
      height: auto;
      width:auto;
-}
+} */
 
 /* ********************************************************************
           DISPLAY OF REFERENCES
@@ -309,27 +333,91 @@ input[type=submit] { align-self: flex-start;; min-width: 10em; }
 .show {display:block;}
 
 /* ********************************************************************
-          PROSPECTS BUTTONS
+          HOME PAGE
 ***********************************************************************/
+.homepage_container {
+  position: relative;
+  margin: 0 auto; /* Center it */
+}
+
+.homepage_container h1 {
+     background-color: skyblue;
+     text-align: center;
+     border-radius: 10px;
+     padding: 5px;
+     margin-right:20px;
+}
+
+.homepage_container img {
+     display: block;
+     width: 100%;
+}
+
+.homepage_content {
+  /* overflow: auto; */
+  font-size: 18pt;
+  position: absolute;
+  bottom: 10px;
+  background: rgb(0, 0, 0); /* Fallback color */
+  background: rgba(0, 0, 0, 0.0); /* Black background with 0.5 opacity */
+  color: #f1f1f1;
+  width: 90%;
+
+  /* white-space: pre-wrap;
+  white-space: pre-line; */
+}
+/* ********************************************************************
+          PROSPECTS PAGE
+***********************************************************************/
+.prospect_describe h1 {
+     background-color: skyblue;
+     text-align: center;
+     border-radius: 10px;
+     padding: 5px;
+     margin-right:20px;
+}
+
 .grid-container {
-  display: grid;
-  grid-template-columns: auto auto auto ;
-  grid-row-gap: 12px;
-  grid-column-gap: 10px;
-  background-color: #2196F3;
-  padding: 10px;
-  margin-right:20px;
+     display: grid;
+     grid-template-columns: auto auto auto ;
+     grid-row-gap: 12px;
+     grid-column-gap: 10px;
+     background-color: #2196F3;
+     padding: 10px;
+     margin-right:20px;
 }
 
 .grid-container > button {
-  background-color: rgba(255, 255, 255, 0.8);
-  text-align: center;
-  padding: 20px 0;
-  font-size: 30px;
-  border-radius: 10px;
+     background-color: rgba(255, 255, 255, 0.8);
+     text-align: center;
+     padding: 20px 0;
+     font-size: 30px;
+     border-radius: 10px;
 }
 
 button[type=button]:disabled {
      background-color: #dddddd;
      color: #999999;
+}
+
+/* ********************************************************************
+          GYPSUM VALLEY PROSPECT PAGE
+***********************************************************************/
+.prospect_describe p {
+     margin:50px;
+     font-size: 18px;
+     padding:20px;
+     background-color: white;
+     white-space: pre-wrap;
+     white-space: pre-line;
+}
+
+#X_SECT1{
+     background-color: white;
+     width: 100%;
+}
+
+#X_SECT2{
+     background-color: white;
+     width: 100%;
 }

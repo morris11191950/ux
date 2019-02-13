@@ -1,15 +1,18 @@
 from flask import Flask
 from flaskext.mysql import MySQL
-from config import app_config
+#from config import app_config
+from config import Config
 
 db = MySQL()
 
-app = Flask(__name__)
+#app = Flask(__name__)
 
-def create_app(config_name):
-    app = Flask(__name__, instance_relative_config=True)
-    app.config.from_object(app_config[config_name])
-    app.config.from_pyfile('config.py')
+def create_app():
+    #app = Flask(__name__, instance_relative_config=True)
+    app = Flask(__name__)
+    app.config.from_object(Config)
+    #app.config.from_object(app_config[config_name])
+    #app.config.from_pyfile('config.py')
 
     db.init_app(app)
 
