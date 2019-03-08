@@ -8,3 +8,7 @@ def the_prospects():
 @prospects.route('/prospects/GVMS')
 def GVMS():
     return render_template('/prospects/GVMS.html')
+
+@prospects.route('/prospects/FINS')
+def FINS():
+    return render_template('/prospects/FINS.html')

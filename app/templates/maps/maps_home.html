@@ -17,8 +17,8 @@
 ***************************************************************** -->
 <div id="base2_container">
      <div id="base2_menu" >
-          <select class="btn" id="button_districts_map">
-               <option value="Start">By District</option></select>
+          <select class="btn" style="width:100%;" id="button_districts_map">
+               <option  value="Start">Search Maps By District</option></select>
      </div>
 </div>
 
@@ -33,7 +33,6 @@ $(document).ready(function() {
 //*************************************************************
 $("#button_districts_map").change(function() {
      var selected_id = $(this).children("option:selected").val();
-     //console.log('selected_id', selected_id);
      doAjax_deposits_by_district(selected_id);
 });
 
@@ -41,7 +40,6 @@ $("#button_districts_map").change(function() {
 //   BY_DISTRICT BUTTON: ACTIVATES DROPDOWN OF ALL DISTRICTS
 //*************************************************************
 $("#button_districts_map").click(function() {
-     //console.log('map');
      doAjax_districts_map();
 });
 

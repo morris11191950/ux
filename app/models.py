@@ -144,6 +144,7 @@ class Queries():
         usrFragSQL2 = '%' + '' + '%'
         usrFragSQL3 = '%' + '' + '%'
         usrFragSplit = usrFrag.split(',')
+        # print(usrFragSplit)
         if len(usrFragSplit) == 1:
             usrFragSQL1 = '%' + usrFragSplit[0] + '%'
         if len(usrFragSplit) == 2:
