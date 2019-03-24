@@ -25,8 +25,6 @@ BUTTONS FOR MAIN LITERATURE VIEW
           <select class="btn" id="button_specials">
                <option value="Start">Special Collections</option></select>
           <button class="btn2" id="button_new_ref"><i class="fa fa-plus"></i></button>
-          <!-- <input class="btn2" type='image' id="button_new_ref"
-               src = 'static/img/plus_icon_26x26.png'> -->
           <input type="text" name="name" id="base2_search">
      </div>
 </div>
@@ -199,7 +197,7 @@ var doAjax_districts = function() {
   };
 
   //*************************************************************
-  //AJAX CALL TO SEARCH FOR USRINPUT
+  //AJAX CALL TO SEARCH FOR USR INPUT
   // Color the pdf and url refs blue
   //*************************************************************
   var doAjax_references_search = function(usrFrag) {
@@ -220,20 +218,21 @@ var doAjax_districts = function() {
                $.each(objects, function(i, object) {
                     u = object.url
                     f = object.filename
+                    r = object.reference + " Ref Id = " + object.reference_id + " "
                     if (u && u!='None' && u!='') {
                          $('#references_selected_display').append(
                          "<li style='color:blue'><span class='refEditTextHit'>"
-                              + object.reference +
+                              + r +
                          "</span><span class='refEditButton'>[Edit]</span></li>")
                        } else if (f && f!='None' && f!='') {
                           $('#references_selected_display').append(
                            "<li style='color:blue'><span class='refEditTextHit'>"
-                                + object.reference +
+                                + r +
                            "</span><span class='refEditButton'>[Edit]</span></li>")
                        } else {
                           $('#references_selected_display').append(
                             "<li style='color:black'><span class='refEditText'>"
-                                 + object.reference +
+                                 + r +
                             "</span><span class='refEditButton'>[Edit]</span></li>")
                     }
                });
@@ -281,20 +280,21 @@ var doAjax_districts = function() {
               $.each(objects, function(i, object) {
                    u = object.url
                    f = object.filename
+                   r = object.reference + " Ref Id = " + object.reference_id + " "
                    if (u && u!='None' && u!='') {
                         $('#references_selected_display').append(
                         "<li style='color:blue'><span class='refEditTextHit'>"
-                             + object.reference +
+                             + r +
                         "</span><span class='refEditButton'>[Edit]</span></li>")
                       } else if (f && f!='None' && f!='') {
                          $('#references_selected_display').append(
                           "<li style='color:blue'><span class='refEditTextHit'>"
-                               + object.reference +
+                               + r +
                           "</span><span class='refEditButton'>[Edit]</span></li>")
                       } else {
                          $('#references_selected_display').append(
                            "<li style='color:black'><span class='refEditText'>"
-                                + object.reference +
+                                + r +
                            "</span><span class='refEditButton'>[Edit]</span></li>")
                    }
               });
@@ -342,20 +342,21 @@ var doAjax_districts = function() {
               $.each(objects, function(i, object) {
                    u = object.url
                    f = object.filename
+                   r = object.reference + " Ref Id = " + object.reference_id + " "
                    if (u && u!='None' && u!='') {
                         $('#references_selected_display').append(
                         "<li style='color:blue'><span class='refEditTextHit'>"
-                             + object.reference +
+                             + r +
                         "</span><span class='refEditButton'>[Edit]</span></li>")
                       } else if (f && f!='None' && f!='') {
                          $('#references_selected_display').append(
                           "<li style='color:blue'><span class='refEditTextHit'>"
-                               + object.reference +
+                               + r +
                           "</span><span class='refEditButton'>[Edit]</span></li>")
                       } else {
                          $('#references_selected_display').append(
                            "<li style='color:black'><span class='refEditText'>"
-                                + object.reference +
+                                + r +
                            "</span><span class='refEditButton'>[Edit]</span></li>")
                    }
               });
@@ -392,6 +393,8 @@ var doAjax_references_all = function() {
      $('#references_all_display').empty()
      $('#references_selected_display').empty()
 
+     console.log("In references: ");
+
      $.ajax({
         type: "GET",
         url: "http://127.0.0.1:5000/references_all",
@@ -400,20 +403,21 @@ var doAjax_references_all = function() {
              $.each(objects, function(i, object) {
                   u = object.url
                   f = object.filename
+                  r = object.reference + " Ref Id = " + object.reference_id + " "
                   if (u && u!='None') {
                      $('#references_all_display').append(
                        "<li style='color:blue'><span class='refEditTextHit'>"
-                            + object.reference +
+                            + r +
                        "</span><span class='refEditButton'>[Edit]</span></li>")
                   } else if (f && f!='None') {
                      $('#references_all_display').append(
                        "<li style='color:blue'><span class='refEditTextHit'>"
-                            + object.reference +
+                            + r +
                        "</span><span class='refEditButton'>[Edit]</span></li>")
                   } else {
                      $('#references_all_display').append(
                        "<li style='color:black'><span class='refEditText'>"
-                            + object.reference +
+                            + r +
                        "</span><span class='refEditButton'>[Edit]</span></li>")
                   }
              });

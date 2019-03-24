@@ -69,7 +69,8 @@ class Queries():
         cursor = self.conn.cursor()
         sql = """SELECT d.deposit_id, d.deposit_name,
                 d.latitude, d.longitude, s.state,
-                c1.country, c2.county, dis.district_name
+                c1.country, c2.county, dis.district_name,
+                p.pounds_u3o8, p.grade
             FROM deposit d
             INNER JOIN district_to_deposit dd
                 ON dd.deposit_id = d.deposit_id
@@ -77,6 +78,7 @@ class Queries():
             LEFT JOIN state s ON s.state_id = d.state_id
             INNER JOIN country c1 ON c1.country_id = d.country_id
             LEFT JOIN county c2 ON c2.county_id = d.county_id
+            LEFT JOIN production p ON p.deposit_id = d.deposit_id
             WHERE (dd.district_id = %s AND dd.verified = 'y')
             ORDER BY d.deposit_id """
         cursor.execute(sql, district_id)
@@ -87,7 +89,7 @@ class Queries():
             json_ref = {'deposit_id':row[0], 'deposit_name':row[1],
                 'latitude':row[2], 'longitude':row[3],
                 'state':row[4], 'country':row[5], 'county':row[6],
-                'district_name':row[7]}
+                'district_name':row[7], 'pounds_u3o8':row[8], 'grade':row[9]}
             json_refs.append(json_ref)
             json_ref = {}
 

@@ -14,7 +14,6 @@
 
 <div class="form">
      <div class="form-heading">Make Edits</div>
-     <p>Reference Id = {{refid}}</p>
      <form action="" name="myform" method="post">
           <label>
                <span>Reference</span>
@@ -84,8 +83,7 @@
 //  BUTTON FUNCTIONS
 //*************************************************************
 function cancelFunction() {
-    // window.location.href = 'http://127.0.0.1:5000/literature';
-    location.reload(true);
+     location.reload(true);
 };
 
 function newFunction() {

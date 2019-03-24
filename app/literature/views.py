@@ -1,4 +1,4 @@
-from flask import render_template, jsonify, json, request
+from flask import render_template, jsonify, json, request, redirect, url_for
 from . import literature
 from ..models import Queries
 
@@ -20,6 +20,7 @@ def districts_all():
 def references_all():
     rows = Queries().references_all()
     jsonStr = json.dumps(rows)
+    # print('rows ', rows)
     j = jsonify(Refs=jsonStr)
     return j
 
