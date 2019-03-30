@@ -11,13 +11,14 @@ class Queries():
         self.conn = conn
 
 #######################################################################
-# ALLS FOR DROP DOWNS
+# CATEGORIES ALL
 ######################################################################
     def categories_all(self):
         json_categories = []
         cursor = self.conn.cursor()
         sql = """SELECT category_id, category_description
-            FROM category """
+            FROM category
+            ORDER BY category_description"""
         cursor.execute(sql)
         self.conn.close()
         rows = cursor.fetchall()
@@ -28,6 +29,28 @@ class Queries():
             json_category = {}
         return json_categories
 
+#######################################################################
+# SPECIAL COLLECTIONS ALL
+######################################################################
+    def specialCollections_all(self):
+        json_specialCollections = []
+        cursor = self.conn.cursor()
+        sql = """SELECT spcol_id, spcol_description
+            FROM special_collection
+            ORDER BY spcol_description"""
+        cursor.execute(sql)
+        self.conn.close()
+        rows = cursor.fetchall()
+        #Convert to JSON format
+        for row in rows:
+            json_specialCollection = {'spcol_id': row[0], 'spcol_description': row[1]}
+            json_specialCollections.append(json_specialCollection)
+            json_specialCollection = {}
+        return json_specialCollections
+
+#######################################################################
+# DISTRICTS ALL
+######################################################################
     def districts_all(self):
         json_districts = []
         cursor = self.conn.cursor()
@@ -44,6 +67,9 @@ class Queries():
             json_district = {}
         return json_districts
 
+#######################################################################
+# REFERENCES ALL
+######################################################################
     def references_all(self):
         json_refs = []
         cursor = self.conn.cursor()
@@ -96,7 +122,7 @@ class Queries():
         return json_refs
 
 #######################################################################
-# REFERENCES BY DISTRICT AND CATEGORY SELECTION
+# REFERENCES BY DISTRICT
 ######################################################################
     def references_by_district(self, district_id):
         json_refs = []
@@ -117,6 +143,9 @@ class Queries():
             json_ref = {}
         return json_refs
 
+#######################################################################
+# REFERENCES BY CATEGORY
+######################################################################
     def references_by_category(self, category_id):
         json_refs = []
         cursor = self.conn.cursor()
@@ -126,6 +155,31 @@ class Queries():
             WHERE c.category_id = %s
             ORDER BY r.reference """
         cursor.execute(sql, category_id)
+        self.conn.close()
+        rows = cursor.fetchall()
+        #print('Category rows ', rows)
+        #Convert to JSON format
+        for row in rows:
+            json_ref = {'reference_id': row[0], 'reference': row[1],
+                'filename': row[2], 'url': row[3]}
+            json_refs.append(json_ref)
+            json_ref = {}
+        return json_refs
+
+#######################################################################
+# REFERENCES BY SPECIALCOLLECTION
+######################################################################
+    def references_by_specialCollection(self, spcol_id):
+        #print('spcol_id is: ', spcol_id)
+        json_refs = []
+        cursor = self.conn.cursor()
+        sql = """SELECT r.reference_id, r.reference, r.filename, r.url
+            FROM reference r
+            INNER JOIN specialcollection_to_reference sc
+                ON sc.reference_id = r.reference_id
+            WHERE sc.spcol_id = %s
+            ORDER BY r.reference """
+        cursor.execute(sql, spcol_id)
         self.conn.close()
         rows = cursor.fetchall()
         #Convert to JSON format
@@ -172,7 +226,7 @@ class Queries():
             json_ref = {}
         return json_refs
 #######################################################################
-# EDIT PAGE
+# EDIT PAGE FOR ALL DISTRICTS
 ######################################################################
     def districts_by_reference(self, refid):
         json_refs = []
@@ -191,6 +245,9 @@ class Queries():
             json_ref = {}
         return json_refs
 
+#######################################################################
+# EDIT PAGE FOR CATEGORIES
+######################################################################
     def categories_by_reference(self, refid):
         json_refs = []
         cursor = self.conn.cursor()
@@ -211,6 +268,9 @@ class Queries():
             json_ref = {}
         return json_refs
 
+#######################################################################
+# EDIT PAGE FOR ALL REFERENCES
+######################################################################
     def references_edit(self, id):
         json_refs = []
         cursor = self.conn.cursor()

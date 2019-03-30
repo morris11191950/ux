@@ -22,7 +22,7 @@ BUTTONS FOR MAIN LITERATURE VIEW
                <option value="Start">By District</option></select>
           <select class="btn" id="button_categories">
                <option value="Start">Topics</option></select>
-          <select class="btn" id="button_specials">
+          <select class="btn" id="button_specialCollections">
                <option value="Start">Special Collections</option></select>
           <button class="btn2" id="button_new_ref"><i class="fa fa-plus"></i></button>
           <input type="text" name="name" id="base2_search">
@@ -69,6 +69,7 @@ var btns = header.getElementsByClassName("btn");
 var $dist_on = "no";
 var $cat_on = "no";
 var $ref_on = "no";
+var $spCol_on = "no";
 var $usrFrag = "";
 
 //*************************************************************
@@ -130,6 +131,18 @@ $("#button_categories").click(function() {
 });
 
 //*************************************************************
+//   SPECIAL_COLLECTIONS BUTTON:
+//    ACTIVATES DROPDOWN OF SPECIAL_COLLECTIONS
+//*************************************************************
+$("#button_specialCollections").click(function() {
+     $('#references_all_display').hide();
+     if ($spCol_on == "no") {
+          $spCol_on = "yes";
+          doAjax_specialCollections();
+     }
+});
+
+//*************************************************************
 //   ALL_LITERATURE BUTTON: ACTIVATES DROPDOWN WHEN CLICKEDK
 //*************************************************************
 $("#button_references_all").click(function() {
@@ -154,6 +167,15 @@ $("#button_categories").change(function() {
      var selected_id = $(this).children("option:selected").val();
      var selected_txt = $(this).children("option:selected").text();
      doAjax_references_by_category(selected_id)
+});
+
+//*************************************************************
+//   BY_SPECIALCOLLECTION SELECTION
+//*************************************************************
+$("#button_specialCollections").change(function() {
+     var selected_id = $(this).children("option:selected").val();
+     var selected_txt = $(this).children("option:selected").text();
+     doAjax_references_by_specialCollection(selected_id)
 });
 
 //*************************************************************
@@ -195,6 +217,27 @@ var doAjax_districts = function() {
            }
        });
   };
+
+  //*************************************************************
+  //AJAX CALL TO RETRIEVE SPECIALCOLLECTIONS AND DISPLAY THEM
+  //*************************************************************
+  var doAjax_specialCollections = function() {
+
+       $("#button_specialCollections").val($("#button_specialCollections option:first").val());
+
+       $.ajax({
+          type: "GET",
+          url: "http://127.0.0.1:5000/specialCollections_all",
+          success: function(data) {
+               objects = JSON.parse(data.SpecialCollections)
+               $.each(objects, function(i, object) {
+                    $temp = "<option " + "value="  + object.spcol_id + ">"
+                         + object.spcol_description + '</option>'
+                    $('#button_specialCollections').append($temp);
+               });
+            }
+        });
+   };
 
   //*************************************************************
   //AJAX CALL TO SEARCH FOR USR INPUT
@@ -381,6 +424,67 @@ var doAjax_districts = function() {
           }
        });
   };
+
+  //*************************************************************
+  //AJAX CALL TO RETRIEVE REFERENCES FOR SELECTED SPECIALCOLLECTION,
+  // COLOR REFS WITH FILENAME OR PDF BLUE
+  // ACTIVATE EDIT BUTTONS
+  //*************************************************************
+  var doAjax_references_by_specialCollection = function(inputValue) {
+
+       $("#wait").show();
+       $('#references_all_display').empty()
+       $('#references_selected_display').empty()
+
+       $.ajax({
+          type: "GET",
+          url: "http://127.0.0.1:5000/references_by_specialCollection/" + inputValue,
+          success: function(data) {
+               $('#references_selected_display').empty();
+               objects = JSON.parse(data.Refs)
+               $('#references_selected_display').show();
+               $.each(objects, function(i, object) {
+                    u = object.url
+                    f = object.filename
+                    r = object.reference + " Ref Id = " + object.reference_id + " "
+                    if (u && u!='None' && u!='') {
+                         $('#references_selected_display').append(
+                         "<li style='color:blue'><span class='refEditTextHit'>"
+                              + r +
+                         "</span><span class='refEditButton'>[Edit]</span></li>")
+                       } else if (f && f!='None' && f!='') {
+                          $('#references_selected_display').append(
+                           "<li style='color:blue'><span class='refEditTextHit'>"
+                                + r +
+                           "</span><span class='refEditButton'>[Edit]</span></li>")
+                       } else {
+                          $('#references_selected_display').append(
+                            "<li style='color:black'><span class='refEditText'>"
+                                 + r +
+                            "</span><span class='refEditButton'>[Edit]</span></li>")
+                    }
+               });
+          },
+            complete: function(){
+                 $("#wait").hide();
+
+                 $(".refEditButton").click(function() {
+                      var clickIndex = $(this).parent('li').index()
+                      var refIndex = objects[clickIndex].reference_id;
+                      theUrl = 'http://127.0.0.1:5000/literature/references_edit/' + refIndex
+                      window.open(theUrl, '_self');
+                 });
+
+                 $(".refEditTextHit").click(function(){
+                      ind = $(this).parent('li').index();
+                      //console.log("ind: ", ind);
+                      id_ref = objects[ind].reference_id;
+                      //console.log("id_ref: ", id_ref);
+                      doAjax_get_url_pdf(id_ref);
+                 });
+           }
+        });
+   };
 
 //*************************************************************
 //AJAX CALL TO RETRIEVE ALL REFERENCES AND DISPLAY THEM,

@@ -9,6 +9,15 @@ def categories_all():
     j = jsonify(Categories=jsonStr)
     return j
 
+@literature.route('/specialCollections_all')
+def specialCollections_all():
+    #print('I made it to special collections')
+    rows = Queries().specialCollections_all()
+    jsonStr = json.dumps(rows)
+    #print('rows ', rows)
+    j = jsonify(SpecialCollections=jsonStr)
+    return j
+
 @literature.route('/districts_all')
 def districts_all():
     rows = Queries().districts_all()
@@ -27,6 +36,13 @@ def references_all():
 @literature.route('/references_by_category/<int:category_id>')
 def references_by_category(category_id):
     rows = Queries().references_by_category(category_id)
+    jsonStr = json.dumps(rows)
+    j = jsonify(Refs=jsonStr)
+    return j
+
+@literature.route('/references_by_specialCollection/<int:spcol_id>')
+def references_by_specialCollection(spcol_id):
+    rows = Queries().references_by_specialCollection(spcol_id)
     jsonStr = json.dumps(rows)
     j = jsonify(Refs=jsonStr)
     return j
