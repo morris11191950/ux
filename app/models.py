@@ -68,6 +68,27 @@ class Queries():
         return json_districts
 
 #######################################################################
+# COUNTIES ALL
+######################################################################
+    def counties_all(self):
+        json_counties = []
+        cursor = self.conn.cursor()
+        sql = """SELECT c.county_id, c.county, s.state_id, s.state
+        FROM county c
+        INNER JOIN state s ON s.state_id = c.state_id
+        ORDER BY s.state """
+        cursor.execute(sql)
+        self.conn.close()
+        rows = cursor.fetchall()
+        #print('County rows ', rows)
+        #Convert to JSON format
+        for row in rows:
+            json_county = {'county_id': row[0], 'county': row[1], 'state_id':row[2], 'state':row[3]}
+            json_counties.append(json_county)
+            json_county = {}
+        return json_counties
+
+#######################################################################
 # REFERENCES ALL
 ######################################################################
     def references_all(self):
@@ -116,6 +137,43 @@ class Queries():
                 'latitude':row[2], 'longitude':row[3],
                 'state':row[4], 'country':row[5], 'county':row[6],
                 'district_name':row[7], 'pounds_u3o8':row[8], 'grade':row[9]}
+            json_refs.append(json_ref)
+            json_ref = {}
+
+        return json_refs
+
+#######################################################################
+# DEPOSITS BY COUNTY
+######################################################################
+    def deposits_by_county(self, county_id, state_id):
+        #print('type county_id ', type(county_id))
+        county_id = str(county_id)
+        state_id = str(state_id)
+        #print('county_id, state_id ', county_id,  ' ', state_id)
+        json_refs = []
+        cursor = self.conn.cursor()
+        sql = """SELECT d.deposit_id, d.deposit_name,
+                d.latitude, d.longitude, s.state,
+                c1.country, c.county,
+                p.pounds_u3o8, p.grade
+            FROM deposit d
+            INNER JOIN county c ON c.county_id = d.county_id
+            INNER JOIN state s ON s.state_id = c.state_id
+            INNER JOIN country c1 ON c1.country_id = d.country_id
+            LEFT JOIN production p ON p.deposit_id = d.deposit_id
+            WHERE (c.county_id = %s AND c.state_id = %s)
+            ORDER BY d.deposit_id """
+        #print('SQL ', sql)
+        cursor.execute(sql, (county_id, state_id))
+        #print('SQL executed')
+        self.conn.close()
+        rows = cursor.fetchall()
+        #Convert to JSON format
+        for row in rows:
+            json_ref = {'deposit_id':row[0], 'deposit_name':row[1],
+                'latitude':row[2], 'longitude':row[3],
+                'state':row[4], 'country':row[5], 'county':row[6],
+                'pounds_u3o8':row[7], 'grade':row[8]}
             json_refs.append(json_ref)
             json_ref = {}
 
@@ -269,6 +327,29 @@ class Queries():
         return json_refs
 
 #######################################################################
+# EDIT PAGE FOR SPECIIAL COLLECTIONS
+######################################################################
+    def specialCollections_by_reference(self, refid):
+        json_refs = []
+        cursor = self.conn.cursor()
+        #print('in models ', refid)
+        sql = """SELECT r.spcol_id, s.spcol_name, s.spcol_description
+            FROM specialCollection_to_reference r
+            INNER JOIN special_collection s ON s.spcol_id = r.spcol_id
+            WHERE r.reference_id = %s """
+        cursor.execute(sql, refid)
+        self.conn.close()
+        rows = cursor.fetchall()
+        #Convert to JSON format
+        for row in rows:
+            #print('category row1  ', row[1])
+            json_ref = {'special_id': row[0],
+                'special_name': row[1], 'special_description': row[2]}
+            json_refs.append(json_ref)
+            json_ref = {}
+        return json_refs
+
+#######################################################################
 # EDIT PAGE FOR ALL REFERENCES
 ######################################################################
     def references_edit(self, id):
@@ -379,6 +460,23 @@ class Queries():
              self.conn.commit()
         cursor.close()
 
+    def references_edit_submit_specials(self, refid, special_ids):
+        #print('in models: refid, special_ids ', refid, special_ids)
+        cursor = self.conn.cursor()
+        sql = """DELETE
+           FROM specialCollection_to_reference
+           WHERE reference_id = %s """
+        cursor.execute(sql, (refid))
+        self.conn.commit()
+
+        for special_id in special_ids:
+             sql = """INSERT IGNORE
+                INTO specialCollection_to_reference (spcol_id, reference_id)
+                VALUES(%s, %s)"""
+             cursor.execute(sql, (special_id, refid))
+             self.conn.commit()
+        cursor.close()
+
 #######################################################################
 # DISPLAY PDFS
 ######################################################################
@@ -398,6 +496,7 @@ class Queries():
         cursor.execute(sql, id)
         self.conn.close()
         row = cursor.fetchone()
+        print('in models: row[2] ', row[2])
         #Convert to JSON format
         json_ref = {'url': row[2]}
         return json_ref

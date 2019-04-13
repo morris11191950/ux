@@ -25,6 +25,14 @@ def districts_all():
     j = jsonify(Districts=jsonStr)
     return j
 
+@literature.route('/counties_all')
+def counties_all():
+    rows = Queries().counties_all()
+    jsonStr = json.dumps(rows)
+    #print('counties rows ', rows)
+    j = jsonify(Counties=jsonStr)
+    return j
+
 @literature.route('/references_all')
 def references_all():
     rows = Queries().references_all()
@@ -42,6 +50,7 @@ def references_by_category(category_id):
 
 @literature.route('/references_by_specialCollection/<int:spcol_id>')
 def references_by_specialCollection(spcol_id):
+    #print('Views:references_by_specialCollection')
     rows = Queries().references_by_specialCollection(spcol_id)
     jsonStr = json.dumps(rows)
     j = jsonify(Refs=jsonStr)
@@ -90,6 +99,14 @@ def references_edit_load_categories(refid):
     j = jsonify(Load=jsonStr)
     return j
 
+@literature.route('/edit/references_edit_load_specials/<refid>')
+def references_edit_load_specials(refid):
+    #Query to get the inputs from referenc table
+    rows = Queries().specialCollections_by_reference(refid)
+    jsonStr = json.dumps(rows)
+    j = jsonify(Load=jsonStr)
+    return j
+
 @literature.route('/edit/references_new', methods=['POST'])
 def references_new():
 
@@ -103,7 +120,7 @@ def references_new():
     district_ids = request.json['district_ids']
     category_ids = request.json['category_ids']
 
-    print('yn', yn)
+    #print('yn', yn)
 
     if yn == 'yes':
          yn = 'y'
@@ -139,6 +156,7 @@ def references_edit_submit():
     yn = request.json['yn']
     district_ids = request.json['district_ids']
     category_ids = request.json['category_ids']
+    special_ids = request.json['special_ids']
 
     #print("district_ids: ", district_ids)
 
@@ -151,6 +169,7 @@ def references_edit_submit():
     Queries().references_edit_submit(refid, reference, source, filename, url, yn)
     Queries().references_edit_submit_districts(refid, district_ids)
     Queries().references_edit_submit_categories(refid, category_ids)
+    Queries().references_edit_submit_specials(refid, special_ids)
     return '0'
 
 @literature.route('/url_pdf/<id>')

@@ -21,11 +21,18 @@ BUTTONS FOR MAIN LITERATURE VIEW
           <select class="btn" id="button_districts">
                <option value="Start">By District</option></select>
           <select class="btn" id="button_categories">
-               <option value="Start">Topics</option></select>
-          <select class="btn" id="button_specialCollections">
+               <option value="Start">Categories</option></select>
+          <select class="btn" style="width:200px" id="button_specialCollections">
                <option value="Start">Special Collections</option></select>
-          <button class="btn2" id="button_new_ref"><i class="fa fa-plus"></i></button>
-          <input type="text" name="name" id="base2_search">
+          <button class="btn2" style="width:50px" id="button_new_ref"><i class="fa fa-plus"></i></button>
+          <!-- <input type="text" name="name" id="base2_search"> -->
+          <div class="search-box">
+            <!-- Type to search -->
+              <input class="search-txt" type="text" name="" placeholder="Up to 3 comma-separated strings, e.g. chinle,uran,utah">
+              <a class="search-btn" href="#">
+              <i class="fas fa-search"></i>
+              </a>
+          </div>
      </div>
 </div>
 
@@ -75,14 +82,15 @@ var $usrFrag = "";
 //*************************************************************
 //   CLICK ON SEARCH
 //*************************************************************
-$("#base2_search").click(function() {
-     document.getElementById("base2_search").placeholder =
-          "Up to 3 comma-separated strings, e.g. chinle,uran,utah";
-});
+// $("#base2_search").click(function() {
+//      document.getElementById("base2_search").placeholder =
+//           "Up to 3 comma-separated strings, e.g. chinle,uran,utah";
+// });
 
 $("input").on("keydown",function search(e) {
     if(e.keyCode == 13) {
         usrFrag = $(this).val()
+        //console.log("usrFrag: ", usrFrag);
         doAjax_references_search(usrFrag);
     }
 });
@@ -91,7 +99,7 @@ $("input").on("keydown",function search(e) {
 //   CLICK NEW REFERENCE
 //*************************************************************
 $("#button_new_ref").click(function() {
-     console.log('New ref button was pressed  ');
+     //console.log('New ref button was pressed  ');
      window.open('http://127.0.0.1:5000/literature/references_edit/0');
 });
 
@@ -245,7 +253,7 @@ var doAjax_districts = function() {
   //*************************************************************
   var doAjax_references_search = function(usrFrag) {
 
-       console.log("In ajax - usrFrag", usrFrag);
+       //console.log("In ajax - usrFrag", usrFrag);
 
        $("#wait").show();
        $('#references_all_display').empty()
@@ -497,7 +505,7 @@ var doAjax_references_all = function() {
      $('#references_all_display').empty()
      $('#references_selected_display').empty()
 
-     console.log("In references: ");
+     //console.log("In references: ");
 
      $.ajax({
         type: "GET",
@@ -554,7 +562,7 @@ var doAjax_references_all = function() {
  //*************************************************************
  var doAjax_get_url_pdf = function(id_ref) {
 
-      console.log("Displaying id_ref: ", id_ref);
+      //console.log("Displaying id_ref: ", id_ref);
 
       $.ajax({
          type: "GET",
@@ -567,6 +575,7 @@ var doAjax_references_all = function() {
          },
            complete: function(){
                 //doAjax_display_pdf(object.url);
+                //console.log("object.url: ", object.url);
                 window.open(object.url);
           }
        });

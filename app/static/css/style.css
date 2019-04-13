@@ -133,58 +133,65 @@ input[type=submit] { align-self: flex-start;; min-width: 10em; }
   cursor: pointer;
 }
 
-/* .sm_dropbtn:focus {
-  background-color: #3e8e41;
-}
-
-.sm_dropbtn:hover {
-  background-color: #3e8e41;
-}
-
-#sm_district_input {
-  border-box: box-sizing;
-  background-position: 14px 12px;
-  background-repeat: no-repeat;
-  width: 230px
-  font-size: 16px;
-  padding: 14px 20px 12px 45px;
-  border: none;
-  border-bottom: 1px solid #ddd;
-}
-
-#sm_district_input:focus {outline: 3px solid #ddd;}
-
-.sm_district_dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.sm_district_dropdown-content {
-  display: none;
+/* ********************************************************************
+          EXPANDING SEARCH BAR NEW (AWESOME)
+***********************************************************************/
+.search-box{
   position: absolute;
-  background-color: #f6f6f6;
-  min-width: 230px;
-  overflow: auto;
-  border: 1px solid #ddd;
-  z-index: 1;
+  top: 10%;
+  left: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  text-justify: none;
+  transform: translate(-100%, 0%);
+  background: #2f3640;
+  height: 17px;
+  width: 17px;
+  border-radius: 40px;
+  padding: 10px;
+  transition: 0.4s;
 }
 
-.sm_district_dropdown-content a {
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
+.search-box:hover{
+  width: 500px;
 }
 
-.sm_district_dropdown a:hover {background-color: #ddd;}
+.search-box:hover > .search-txt{
+  width: 500px;
+}
 
-.show {display: block;} */
+/* .search-btn:hover{
+  background: white;
+} */
 
+.search-btn{
+  color: #e84118;
+  background: #2f3640;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* transition: 0.4s; */
+}
+
+.search-txt{
+  border: none;
+  background: none;
+  outline: none;
+  color: white;
+  font-size: 16px;
+  line-height: 17px;
+  width: 0px;
+  transition: 0.4s;
+}
 
 /* ********************************************************************
-          EXPANDING SEARCH BAR
+          EXPANDING SEARCH BAR OLD
 ***********************************************************************/
-#base2_search {
+/* #base2_search {
     width: 3%;
     height: 40px;
     background-image: url('../img/search_icon.png');
@@ -195,11 +202,10 @@ input[type=submit] { align-self: flex-start;; min-width: 10em; }
     position: absolute;
     right: 0;
     border-style: none;
-    /* background-color: white; */
     color: black;
 }
 
-#base2_search[type=text]:focus {width: 50%; background-color: white;}
+#base2_search[type=text]:focus {width: 50%; background-color: white;} */
 
 /* ********************************************************************
           LITERATURE EDIT BUTTONS
@@ -337,13 +343,21 @@ input[type=submit] { align-self: flex-start;; min-width: 10em; }
      margin: 15px 0 30px 0;
 }
 
+.form #list-specials {
+     border: 1px solid #C2C2C2;
+     background-color: white;
+     padding: 0;
+     width: 75%;
+     margin: 15px 0 30px 0;
+}
+
 .form .small-field:focus,
 .form .large-field:focus,
 .form .select-dropdown:focus{
 	border: 2px solid #0C0;
 }
 
-#districts_former, #categories_former {
+#districts_former, #categories_former, #specials_former {
      font-size: 10pt;
      font-weight: normal;
      font-style: normal;
@@ -387,8 +401,8 @@ input[type=submit] { align-self: flex-start;; min-width: 10em; }
 	margin: 5px;
 }
 
-.editDistrictDeleteButton, .editCategoryDeleteButton {color:#FF6347; font-style: italic;}
-.editDistrictDeleteButton:hover, .editCategoryDeleteButton:hover {
+.editDistrictDeleteButton, .editCategoryDeleteButton, .editSpecialDeleteButton {color:#FF6347; font-style: italic;}
+.editDistrictDeleteButton:hover, .editCategoryDeleteButton:hover, .editSpecialDeleteButton:hover {
     background-color: skyblue;
     cursor: pointer;
 }
