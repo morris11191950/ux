@@ -33,6 +33,14 @@ def counties_all():
     j = jsonify(Counties=jsonStr)
     return j
 
+@literature.route('/deposits_all')
+def deposits_all():
+    rows = Queries().deposits_all()
+    jsonStr = json.dumps(rows)
+    #print('deposits views ')
+    j = jsonify(Deposits=jsonStr)
+    return j
+
 @literature.route('/references_all')
 def references_all():
     rows = Queries().references_all()

@@ -21,6 +21,23 @@ def deposits_by_county(county_id, state_id):
     #print('j in views ', rows)
     return j
 
+# @maps.route('/deposits_by_deposit/<int:deposit_id>')
+# def deposits_by_deposit(deposit_id):
+#     rows = Queries().deposits_by_deposit(deposit_id)
+#     jsonStr = json.dumps(rows)
+#     j = jsonify(Deposits=jsonStr)
+#     #print('rows in views ', rows)
+#     return j
+
+@maps.route('/deposits_by_deposit/<string:selected_id_str>')
+def deposits_by_deposit(selected_id_str):
+    #print('selected_id_str views ', selected_id_str)
+    rows = Queries().deposits_by_deposit(selected_id_str)
+    jsonStr = json.dumps(rows)
+    j = jsonify(Deposits=jsonStr)
+    #print('rows in views ', rows)
+    return j
+
 @maps.route('/maps_home')
 def maps_home():
     cesium_api_key = current_app.config['CESIUM_API_KEY']

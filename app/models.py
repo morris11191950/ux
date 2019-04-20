@@ -89,6 +89,28 @@ class Queries():
         return json_counties
 
 #######################################################################
+# DEPOSITS ALL
+######################################################################
+    def deposits_all(self):
+        json_deposits = []
+        cursor = self.conn.cursor()
+        #BOGS DOWN IF TOO MANY DEPOSITS, MUST LIMIT SELECTION
+        sql = """SELECT deposit_id, deposit_name
+        FROM deposit
+        WHERE database_name = 'sjm'
+        ORDER BY deposit_name """
+        cursor.execute(sql)
+        self.conn.close()
+        rows = cursor.fetchall()
+        #print('Deposit models rows ')
+        #Convert to JSON format
+        for row in rows:
+            json_deposit = {'deposit_id': row[0], 'deposit_name': row[1]}
+            json_deposits.append(json_deposit)
+            json_deposit = {}
+        return json_deposits
+
+#######################################################################
 # REFERENCES ALL
 ######################################################################
     def references_all(self):
@@ -155,7 +177,7 @@ class Queries():
         sql = """SELECT d.deposit_id, d.deposit_name,
                 d.latitude, d.longitude, s.state,
                 c1.country, c.county,
-                p.pounds_u3o8, p.grade
+                p.pounds_u3o8, p.grade, d.database_name
             FROM deposit d
             INNER JOIN county c ON c.county_id = d.county_id
             INNER JOIN state s ON s.state_id = c.state_id
@@ -173,7 +195,53 @@ class Queries():
             json_ref = {'deposit_id':row[0], 'deposit_name':row[1],
                 'latitude':row[2], 'longitude':row[3],
                 'state':row[4], 'country':row[5], 'county':row[6],
-                'pounds_u3o8':row[7], 'grade':row[8]}
+                'pounds_u3o8':row[7], 'grade':row[8], 'database_name':row[9]}
+            json_refs.append(json_ref)
+            json_ref = {}
+
+        return json_refs
+
+#######################################################################
+# DEPOSITS BY DEPOSIT
+######################################################################
+    def deposits_by_deposit(self, deposit_ids):
+        #deposit_ids = "31025!33683!"
+        #GET INDIVIDUAL IDS AS ARRAY OF STRINGS
+        list_of_ids = deposit_ids.split('!')
+        list_of_ids.remove('')
+        print('list_of_ids ', list_of_ids)
+        format_strings = ','.join(['%s'] * len(list_of_ids))
+        print('format_strings ', format_strings)
+        tuple_of_ids = tuple(list_of_ids)
+        print('tuple_of_ids ', tuple_of_ids)
+
+
+        #print('deposit_ids in models ', deposit_ids)
+        json_refs = []
+        cursor = self.conn.cursor()
+        sql = """SELECT d.deposit_id, d.deposit_name,
+                d.latitude, d.longitude, s.state,
+                c1.country, c2.county,
+                p.pounds_u3o8, p.grade, d.database_name
+            FROM deposit d
+            LEFT JOIN state s ON s.state_id = d.state_id
+            INNER JOIN country c1 ON c1.country_id = d.country_id
+            LEFT JOIN county c2 ON c2.county_id = d.county_id
+            LEFT JOIN production p ON p.deposit_id = d.deposit_id
+            WHERE (d.deposit_id IN (%s))
+            ORDER BY d.deposit_id """ % format_strings
+        #print('SQL in models ', sql)
+        cursor.execute(sql, tuple_of_ids)
+        #cursor.execute(sql, deposit_ids)
+        self.conn.close()
+        rows = cursor.fetchall()
+        #print('rows in models ', rows)
+        #Convert to JSON format
+        for row in rows:
+            json_ref = {'deposit_id':row[0], 'deposit_name':row[1],
+                'latitude':row[2], 'longitude':row[3],
+                'state':row[4], 'country':row[5], 'county':row[6],
+                'pounds_u3o8':row[7], 'grade':row[8], 'database_name':row[9]}
             json_refs.append(json_ref)
             json_ref = {}
 

@@ -563,6 +563,7 @@ var doAjax_references_all = function() {
  var doAjax_get_url_pdf = function(id_ref) {
 
       //console.log("Displaying id_ref: ", id_ref);
+      $("#wait").show();
 
       $.ajax({
          type: "GET",
@@ -574,6 +575,7 @@ var doAjax_references_all = function() {
               object.url
          },
            complete: function(){
+                $("#wait").hide();
                 //doAjax_display_pdf(object.url);
                 //console.log("object.url: ", object.url);
                 window.open(object.url);
