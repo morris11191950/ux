@@ -37,7 +37,7 @@ BUTTONS FOR MAIN LITERATURE VIEW
 </div>
 
 <!-- *****************************************************************
-DROP DOWN SELECTION LISTS FOR MAIN LITERATURE VIEW
+ VIEW WHERE SELECTIONS ARE SHOWN
 ***************************************************************** -->
 <div>
      <ol id="references_all_display" class="references">
@@ -82,11 +82,6 @@ var $usrFrag = "";
 //*************************************************************
 //   CLICK ON SEARCH
 //*************************************************************
-// $("#base2_search").click(function() {
-//      document.getElementById("base2_search").placeholder =
-//           "Up to 3 comma-separated strings, e.g. chinle,uran,utah";
-// });
-
 $("input").on("keydown",function search(e) {
     if(e.keyCode == 13) {
         usrFrag = $(this).val()

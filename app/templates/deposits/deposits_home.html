@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+
+{% block title %}
+     Ore Deposits
+{% endblock %}
+
+{% block subject %}
+     <span id="title1">Ore Deposits</span>
+{% endblock %}
+
+{% block body %}
+
+<input type="text" style="display:none" id="refresh" value="no">
+
+<!-- *****************************************************************
+BUTTONS FOR DEPOSITS VIEW
+***************************************************************** -->
+<div id="base2_container">
+     <div id="base2_menu" >
+          <select class="btn" id="button_databases">
+            <option value="Start">By Database</option></select>
+          <select class="btn" id="button_districts">
+               <option value="Start">By District</option></select>
+          <button class="btn2" style="width:50px" id="button_new_deposit"><i class="fa fa-plus"></i></button>
+          <div class="search-box">
+              <input class="search-txt" type="text" name="" placeholder="Up to 3 comma-separated strings, e.g. mi,vida">
+              <a class="search-btn" href="#">
+              <i class="fas fa-search"></i>
+              </a>
+          </div>
+     </div>
+</div>
+
+<!-- *****************************************************************
+VIEW WHERE SELECTIONS ARE SHOWN
+***************************************************************** -->
+<div>
+     <ol id="deposits_selected_display" class="deposits_show"></ol>
+</div>
+
+<!-- *****************************************************************
+LOADING PROGRESS ICON
+***************************************************************** -->
+<div id="wait" style="display:none;width:69px;height:89px;border:1px
+     solid black;position:absolute;top:200px;
+     left:50%;padding:2px;">
+     <img src="{{url_for('static', filename='img/demo_wait.gif')}}"
+          width="64" height="64" />
+     <!-- <img src='demo_wait.gif' width="64" height="64" /> -->
+     <br>Loading..
+</div>
+
+<script>
+
+$(document).ready(function() {
+
+//*************************************************************
+//   INITIALIZE VARS
+//*************************************************************
+var $db_on = "no";
+var $dist_on = "no"
+
+//*************************************************************
+//   CLICK ON SEARCH
+//*************************************************************
+$("input").on("keydown",function search(e) {
+    if(e.keyCode == 13) {
+      $('#deposits_selected_display').empty();
+        usrFrag = $(this).val();
+        //console.log("usrFrag: ", usrFrag);
+        doAjax_deposits_search(usrFrag);
+    }
+});
+
+//*************************************************************
+//   BY_DATABASE BUTTON: ACTIVATES DROPDOWN OF ALL DATABASES
+//*************************************************************
+$("#button_databases").click(function() {
+    $('#deposits_selected_display').empty();
+    if ($db_on == "no") {
+        $db_on = "yes";
+        doAjax_databases();
+     }
+});
+
+//*************************************************************
+//   BY_DISTRICT BUTTON: ACTIVATES DROPDOWN OF ALL DISTRICTS
+//*************************************************************
+$("#button_districts").click(function() {
+    $('#deposits_selected_display').empty();
+    if ($dist_on == "no") {
+        $dist_on = "yes";
+        doAjax_districts();
+     }
+});
+
+//*************************************************************
+//   BY_DATABASE SELECTION
+//*************************************************************
+$("#button_databases").change(function() {
+     var selected_id = $(this).children("option:selected").val();
+     //console.log('selected_id  ', selected_id);
+     doAjax_deposits_by_database(selected_id)
+});
+
+//*************************************************************
+//   BY_DISTRICT SELECTION
+//*************************************************************
+$("#button_districts").change(function() {
+     var selected_id = $(this).children("option:selected").val();
+     //console.log('selected_id  ', selected_id);
+     doAjax_deposits_by_district(selected_id)
+});
+
+//*************************************************************
+//AJAX CALL TO RETRIEVE DATABASES AND DISPLAY THEM IN DROP DOWN
+//*************************************************************
+var doAjax_databases = function() {
+     $.ajax({
+        type: "GET",
+        url: "http://127.0.0.1:5000/databases_all",
+        success: function(data) {
+             objects = JSON.parse(data.Databases)
+             $.each(objects, function(i, object) {
+                  $temp = "<option " + "value="  + object.database_name + ">"
+                       + object.database_name + '</option>'
+                  $('#button_databases').append($temp);
+             });
+          }
+      });
+ };
+
+ //*************************************************************
+ //AJAX CALL TO RETRIEVE ALL DISTRICTS AND DISPLAY THEM IN DROP DOWN
+ //*************************************************************
+ var doAjax_districts = function() {
+      $.ajax({
+         type: "GET",
+         url: "http://127.0.0.1:5000/districts_all",
+         success: function(data) {
+              objects = JSON.parse(data.Districts)
+              $.each(objects, function(i, object) {
+                   $temp = "<option " + "value="  + object.district_id + ">"
+                        + object.district_name + '</option>'
+                   $('#button_districts').append($temp);
+              });
+           }
+       });
+  };
+
+ //*************************************************************
+ //AJAX CALL TO RETRIEVE DEPOSITS FOR SELECTED DATABASE,
+ //*************************************************************
+ var doAjax_deposits_by_database = function(inputValue) {
+      //console.log('In ajax call to retrive by db  ', inputValue);
+      $("#wait").show();
+      $.ajax({
+         type: "GET",
+         url: "http://127.0.0.1:5000/deposits_by_database/" + inputValue,
+         success: function(data) {
+              //console.log('Success');
+              $('#deposits_selected_display').empty()
+              objects = JSON.parse(data.Deposits)
+              $.each(objects, function(i, object) {
+                  r = "<b>" + object.deposit_name  + "</b>:      " + object.district_name + ":  " + object.country + ":  " + object.state
+                  $('#deposits_selected_display').append(
+                        "<li>" + r + "</li>")
+                  });
+                },
+          complete: function(){
+            $("#wait").hide();
+               //console.log('Completed ajax call to retrieve deposits');
+          }
+       });
+  };
+
+  //*************************************************************
+  //AJAX CALL TO RETRIEVE DEPOSITS FOR SELECTED DISTRICT,
+  //*************************************************************
+  var doAjax_deposits_by_district = function(inputValue) {
+       $("#wait").show();
+       $.ajax({
+          type: "GET",
+          url: "http://127.0.0.1:5000/deposits_by_district/" + inputValue,
+          success: function(data) {
+               $('#deposits_selected_display').empty()
+               objects = JSON.parse(data.Deposits)
+               $.each(objects, function(i, object) {
+                   r = "<b>" + object.deposit_name + " (" + object.deposit_id + "):" + "</b> (" + object.database_name + ")" + object.district_name + ":  " + object.country + ":  " + object.state
+                   $('#deposits_selected_display').append(
+                         "<li>" + r + "</li>")
+                   });
+                 },
+           complete: function(){
+             $("#wait").hide();
+                //console.log(r);
+           }
+        });
+   };
+
+   //*************************************************************
+   //AJAX CALL TO SEARCH FOR USR INPUT
+   //*************************************************************
+   var doAjax_deposits_search = function(usrFrag) {
+
+        //console.log("In ajax - usrFrag", usrFrag);
+
+        $("#wait").show();
+        $.ajax({
+           type: "GET",
+           url: "http://127.0.0.1:5000/deposits_search/" + usrFrag,
+           success: function(data) {
+                $('#references_selected_display').empty();
+                objects = JSON.parse(data.Deposits)
+                $.each(objects, function(i, object) {
+                  r = "<b>" + object.deposit_name + " (" + object.deposit_id + ")" + "</b>    (" + object.database_name + "):" + object.district_name + ":  " + object.country + ":  " + object.state
+                  $('#deposits_selected_display').append(
+                        "<li>" + r + "</li>")
+                  });
+                },
+            complete: function(){
+                 $("#wait").hide();
+            }
+         });
+    };
+
+
+});
+
+</script>
+
+{% endblock %}

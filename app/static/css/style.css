@@ -67,19 +67,19 @@ input[type=submit] { align-self: flex-start;; min-width: 10em; }
 
 #base2_menu {display: flex;}
 
-/* #base2_container button:hover,
+#base2_container button:hover,
 #nav_list a:hover,
 #base2_container select:hover {
-    background-color: red;
-    color: white;
-} */
-
-#nav_list a:hover {
     background-color: #666;
     color: white;
 }
 
-#button_references_all:hover {
+/* #nav_list a:hover {
+    background-color: #666;
+    color: white;
+} */
+
+/* #button_references_all:hover {
     background-color: #666;
     color: white;
 }
@@ -87,9 +87,9 @@ input[type=submit] { align-self: flex-start;; min-width: 10em; }
 #button_districts:hover {
     background-color: #666;
     color: white;
-}
+} */
 
-#button_categories:hover {
+/* #button_categories:hover {
     background-color: #666;
     color: white;
 }
@@ -102,7 +102,7 @@ input[type=submit] { align-self: flex-start;; min-width: 10em; }
 #button_new_ref:hover {
     background-color: #666;
     color: white;
-}
+} */
 
 .btn {
      font-size: 14pt;
@@ -187,25 +187,6 @@ input[type=submit] { align-self: flex-start;; min-width: 10em; }
   width: 0px;
   transition: 0.4s;
 }
-
-/* ********************************************************************
-          EXPANDING SEARCH BAR OLD
-***********************************************************************/
-/* #base2_search {
-    width: 3%;
-    height: 40px;
-    background-image: url('../img/search_icon.png');
-    background-position: right center;
-    background-repeat: no-repeat;
-    -webkit-transition: width 0.4s ease-in-out;
-    transition: width 0.4s ease-in-out;
-    position: absolute;
-    right: 0;
-    border-style: none;
-    color: black;
-}
-
-#base2_search[type=text]:focus {width: 50%; background-color: white;} */
 
 /* ********************************************************************
           LITERATURE EDIT BUTTONS
@@ -409,8 +390,17 @@ input[type=submit] { align-self: flex-start;; min-width: 10em; }
 
 /* ********************************************************************
 ***********************************************************************
-          MAPS PAGE
+          DEPOSITS
+***********************************************************************
+***********************************************************************/
+.deposits_show {position: absolute; top: 20px; background-color: white;
+     line-height: 20px; padding-left: 70px;
+     font-family: sans-serif; font-size: 12pt;}
 
+/* ********************************************************************
+***********************************************************************
+          MAPS PAGE
+***********************************************************************
 ***********************************************************************/
 #cesiumContainer {
           position: absolute;

@@ -36,4 +36,7 @@ def create_app():
     from .maps import maps as maps_blueprint
     app.register_blueprint(maps_blueprint)
 
+    from .deposits import deposits as deposits_blueprint
+    app.register_blueprint(deposits_blueprint)
+
     return app
