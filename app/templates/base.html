@@ -31,12 +31,123 @@
      {% if g.user %}
           <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
      {% else %}
-       <li><a href="{{ url_for('auth.register') }}">Register</a>
-       <li><a href="{{ url_for('auth.login') }}">Log In</a>
+     <li><a href="{{ url_for('auth.register') }}">Register</a>
+     <li><a href="{{ url_for('auth.login') }}">Log In</a>
      {% endif %}
+     <button id="optionBtn"><i class='fas fa-ellipsis-v' style='color:gray;'></i></button>
   </ul>
 </nav>
 {% block body %}{% endblock %}
+
+<!-- SET UP OPTION MODAL -->
+<div id="simpleModal" class="modal">
+    <div class="modal-content">
+               <span class="closeBtn">&times;</span>
+               <h3>Select Databases:</h3>
+        <div class="modal-body">
+            <form action="">
+                <input id="myUMRDS" type="checkbox" oninput="submit_dbs('MRDS')">MRDS<br>
+                <input id="myULD" type="checkbox" oninput="submit_dbs('ULD')">ULD<br>
+                <input id="myDRUM" type="checkbox" oninput="submit_dbs('DRUM')">DRUM<br>
+                <input id="mySJM" type="checkbox" oninput="submit_dbs('SJM')" checked>SJM<br>
+            </form>
+        </div>
+    </div>
+</div>
+
+  <script>
+
+      var optionBtn = document.getElementById('optionBtn');
+      var modal = document.getElementById('simpleModal');
+      var closeBtn = document.getElementsByClassName('closeBtn')[0];
+
+      //usrDbs is the array of databases to use
+      var usrDbs = ['SJM'];
+
+      optionBtn.addEventListener('click', openModal);
+      closeBtn.addEventListener('click', closeModal);
+      window.addEventListener('click', outsideClick);
+
+       function openModal(){
+         //console.log('Opening the modal');
+         modal.style.display = 'block';
+         //doAjax_openModal(usrDbs);
+       }
+
+       function closeModal(){
+         modal.style.display = 'none';
+         doAjax_closeModal(usrDbs);
+         //doAjax_openModal(usrDbs);
+       }
+
+       function submit_dbs(input){
+         var in_arr = jQuery.inArray( input, usrDbs )
+         if(in_arr == -1){
+           usrDbs.push(input)
+         } else {
+           usrDbs.splice($.inArray(input, usrDbs),1);
+         }
+         console.log('Submit: ', usrDbs)
+       }
+
+       function outsideClick(e){
+         if(e.target == modal){
+           modal.style.display = 'none';
+         }
+       }
+
+       //*************************************************************
+       //AJAX CALL TO OPEN MODAL AND UPDATE DBS
+       //*************************************************************
+       var doAjax_openModal = function() {
+           console.log("Open Modal: (usrDbs)", usrDbs, jQuery.type(usrDbs));
+            $.ajax({
+               type: "GET",
+               url: "http://127.0.0.1:5000/options_home",
+               success: function(data) {
+                    console.log('Open Modal Success: (data)', data, jQuery.type(data))
+                    objects = JSON.parse(data)
+                    console.log('Open Modal Success: (objects)', objects, jQuery.type(objects))
+                 },
+               complete: function(){
+                 console.log("Open Modal Completed (objects)", objects);
+                  $.each(objects, function(i, object) {
+                    console.log("Open Modal Completed (object)", object);
+                    switch(object){
+                      case 'MRDS': $("#myMRDS").prop("checked", true);
+                      case 'ULD': $("#myULD").prop("checked", true);
+                      case 'DRUM': $("#myDRUM").prop("checked", true);
+                      case 'SJM': $("#mySJM").prop("checked", true);
+                     }
+               });
+             }
+           });
+         };
+
+       //*************************************************************
+       //AJAX CALL TO CLOSE MODAL AND UPDATE DB
+       //*************************************************************
+        var doAjax_closeModal = function(usrDbs) {
+            t = {one:"one", two:"two"}
+            tt = JSON.stringify(t)
+            console.log('Close Modal Start: usrDbs ', usrDbs)
+             $.ajax({
+                type: "POST",
+                url: "http://127.0.0.1:5000/options_home",
+                data: JSON.stringify(usrDbs),
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function(data) {
+                  //objects = JSON.parse(data)
+                  console.log('Close Modal Success: ')
+                  //usrDbs = result
+                  },
+          });
+        }
+
+
+  </script>
+
 <section class="content">
   <header>
     {% block header %}{% endblock %}
@@ -46,5 +157,6 @@
   {% endfor %}
   {% block content %}{% endblock %}
 </section>
+
 
 </html>

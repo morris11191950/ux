@@ -14,8 +14,10 @@ def specialCollections_all():
     #print('I made it to special collections')
     rows = Queries().specialCollections_all()
     jsonStr = json.dumps(rows)
-    #print('rows ', rows)
+    #print('Lit View: Special Collections(rows): ', type(rows))
+    #print('Lit View: Special Collections(jsonStr) ', type(jsonStr))
     j = jsonify(SpecialCollections=jsonStr)
+    #print('Lit View: Special Collections(j) ', type(j))
     return j
 
 @literature.route('/districts_all')

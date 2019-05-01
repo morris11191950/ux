@@ -81,11 +81,13 @@ def load_logged_in_user():
 
     if user_id is None:
         g.user = None
+        #g.db_to_use = 'SJM_auth'
     else:
         sql = "SELECT * FROM user WHERE id = '" + str(user_id) + "' "
         cursor.execute(sql)
         data = cursor.fetchone()
         g.user = data[0]
+        #g.db_to_use = 'SJM_suth'
 
 
 @auth.route('/logout')
@@ -97,6 +99,7 @@ def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
+            #g.db_to_use = 'SJM_auth'
             return redirect(url_for('auth.login'))
 
         return view(**kwargs)

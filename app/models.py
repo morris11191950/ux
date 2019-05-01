@@ -1,4 +1,5 @@
 from app import db
+from flask import session
 
 class Queries():
 
@@ -14,6 +15,7 @@ class Queries():
 # CATEGORIES ALL
 ######################################################################
     def categories_all(self):
+
         json_categories = []
         cursor = self.conn.cursor()
         sql = """SELECT category_id, category_description
@@ -133,6 +135,25 @@ class Queries():
 # DEPOSITS BY DISTRICT
 ######################################################################
     def deposits_by_district(self, district_id):
+
+        #GET DATABASES AS ARRAY OF STRINGS
+        usrDatabases = session.get('usrDatabases')
+        print('Model(usrDatabases): ', usrDatabases, type(usrDatabases))
+        objects = JSON.parse(usrDatabases)
+        print('objects ', objects, type(objects))
+
+
+        format_strings = ','.join(['%s'] * len(objects))
+        print('format_strings ', format_strings)
+        tuple_of_dbs = tuple(usrDatabases)
+        print('Model(tuple_of_dbs): ', tuple_of_dbs)
+
+
+        usrDatabases = ['SJM']
+        if usrDatabases is None:
+            usrDatabases = ['SJM']
+
+        print('Models - usrDatabase: ', usrDatabase)
         json_deposits = []
         cursor = self.conn.cursor()
         sql = """SELECT DISTINCT d.deposit_id, d.deposit_name,
@@ -140,16 +161,17 @@ class Queries():
                 c1.country, c2.county, dis.district_name,
                 p.pounds_u3o8, p.grade, d.database_name
             FROM deposit d
-            INNER JOIN district_to_deposit dd
+            LEFT JOIN district_to_deposit dd
                 ON dd.deposit_id = d.deposit_id
             INNER JOIN district dis ON dis.district_id = dd.district_id
             LEFT JOIN state s ON s.state_id = d.state_id
-            INNER JOIN country c1 ON c1.country_id = d.country_id
+            LEFT JOIN country c1 ON c1.country_id = d.country_id
             LEFT JOIN county c2 ON c2.county_id = d.county_id
             LEFT JOIN production p ON p.deposit_id = d.deposit_id
-            WHERE (dd.district_id = %s AND dd.verified = 'y')
-            ORDER BY d.deposit_id """
-        cursor.execute(sql, district_id)
+            WHERE (dd.district_id = %s AND d.database_name IN ()%s))
+            ORDER BY d.deposit_id """ % format_strings
+
+        cursor.execute(sql, (district_id, usrDatabase))
         self.conn.close()
         rows = cursor.fetchall()
         #Convert to JSON format
@@ -183,7 +205,7 @@ class Queries():
             LEFT JOIN production p ON p.deposit_id = d.deposit_id
             WHERE (d.database_name = %s)
             ORDER BY d.deposit_name """
-        print('Models: SQL ', sql)
+        #print('Models: SQL ', sql)
         cursor.execute(sql, databaseName)
         self.conn.close()
         rows = cursor.fetchall()
@@ -205,7 +227,6 @@ class Queries():
         #print('type county_id ', type(county_id))
         county_id = str(county_id)
         state_id = str(state_id)
-        #print('county_id, state_id ', county_id,  ' ', state_id)
         json_deposits = []
         cursor = self.conn.cursor()
         sql = """SELECT DISTINCT d.deposit_id, d.deposit_name,
@@ -213,13 +234,14 @@ class Queries():
                 c1.country, c.county,
                 p.pounds_u3o8, p.grade, d.database_name
             FROM deposit d
-            INNER JOIN county c ON c.county_id = d.county_id
-            INNER JOIN state s ON s.state_id = c.state_id
-            INNER JOIN country c1 ON c1.country_id = d.country_id
+            LEFT JOIN county c ON c.county_id = d.county_id
+            LEFT JOIN state s ON s.state_id = d.state_id
+            LEFT JOIN country c1 ON c1.country_id = d.country_id
             LEFT JOIN production p ON p.deposit_id = d.deposit_id
-            WHERE (c.county_id = %s AND c.state_id = %s)
+            WHERE (c.county_id = %s AND s.state_id = %s)
             ORDER BY d.deposit_id """
         #print('SQL ', sql)
+        #print('county_id, state_id ', county_id,  ' ', state_id)
         cursor.execute(sql, (county_id, state_id))
         #print('SQL executed')
         self.conn.close()
@@ -297,7 +319,7 @@ class Queries():
             usrFragSQL1 = '%' + usrFragSplit[0] + '%'
             usrFragSQL2 = '%' + usrFragSplit[1] + '%'
             usrFragSQL3 = '%' + usrFragSplit[2] + '%'
-        print('Models usrFragSQLs: ', usrFragSQL1, usrFragSQL2, usrFragSQL3)
+        #print('Models usrFragSQLs: ', usrFragSQL1, usrFragSQL2, usrFragSQL3)
         sql = """SELECT DISTINCT d.deposit_id, d.deposit_name,
                 d.latitude, d.longitude, s.state,
                 c1.country, c.county, dis.district_name,
@@ -312,7 +334,7 @@ class Queries():
             LEFT JOIN production p ON p.deposit_id = d.deposit_id
             WHERE (d.deposit_name like %s and d.deposit_name like %s and d.deposit_name like %s)
             ORDER BY d.deposit_name """
-        print('sql: ', sql)
+        #print('sql: ', sql)
         cursor.execute(sql, (usrFragSQL1, usrFragSQL2, usrFragSQL3))
         #print('sql2: ', sql)
         self.conn.close()
@@ -665,7 +687,7 @@ class Queries():
         cursor.execute(sql, id)
         self.conn.close()
         row = cursor.fetchone()
-        print('in models: row[2] ', row[2])
+        #print('in models: row[2] ', row[2])
         #Convert to JSON format
         json_ref = {'url': row[2]}
         return json_ref

@@ -31,6 +31,80 @@ nav ul {display: flex; margin: 0; padding: 0px 25px 0px 0px;}
 nav ul a {color: #377ba8; font-family: sans-serif;}
 nav ul li {display: block; padding: 0.5rem; }
 
+/**********************************************************************
+***********************************************************************
+     OPTIONS MODAL
+***********************************************************************
+***********************************************************************/
+#optionBtn{
+  color:#fff;
+  width:18px;
+  height:18px;
+  border:0;
+  border-radius: 50%;
+  text-decoration: none;
+  text-align: center;
+  font-size: 14px;
+}
+
+#optionBtn:hover{
+  animation: optionBtnhover 0.7s forwards;
+}
+
+#optionSubmit{
+  color:black;
+  background-color: lightgray;
+  width:80%;
+  /* text-align: center; */
+  /* align-items: center; */
+  padding:2px;
+  border-radius: 10%;
+  text-decoration: none;
+  margin:5px;
+}
+
+@keyframes optionBtnhover{
+  from {background-color:lightgray}
+  to {background-color:white}
+}
+
+.modal{
+  display:none;
+  position:fixed;
+  z-index:10;
+  left:0;
+  top:0;
+  height:100%;
+  width:100%;
+  overflow:auto;
+  background-color:rgba(0, 0, 0, 0.3);
+}
+
+.modal-content{
+  background-color:white;
+  position:fixed;
+  z-index:1;
+  right:2px;
+  top:35px;
+  border-radius: 10px;
+  padding: 0px 10px 10px 10px;
+  color:black;
+  width:15%;
+  box-shadow: 0 5px 8px 0 rgba(0,0,0,0.2), 0 7px 20px 0 rgba(0,0,0,0.17);
+}
+
+.closeBtn{
+  color:#ccc;
+  float: right;
+  font-size: 30px;
+}
+
+.closeBtn:hover, closeBtn:focus{
+  color:black;
+  text-decoration: none;
+  cursor:pointer;
+}
+
 /* ********************************************************************
 ***********************************************************************
           AUTHENTICATION FIELDS
@@ -73,36 +147,6 @@ input[type=submit] { align-self: flex-start;; min-width: 10em; }
     background-color: #666;
     color: white;
 }
-
-/* #nav_list a:hover {
-    background-color: #666;
-    color: white;
-} */
-
-/* #button_references_all:hover {
-    background-color: #666;
-    color: white;
-}
-
-#button_districts:hover {
-    background-color: #666;
-    color: white;
-} */
-
-/* #button_categories:hover {
-    background-color: #666;
-    color: white;
-}
-
-#button_specials:hover {
-    background-color: #666;
-    color: white;
-}
-
-#button_new_ref:hover {
-    background-color: #666;
-    color: white;
-} */
 
 .btn {
      font-size: 14pt;
