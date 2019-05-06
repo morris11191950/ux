@@ -1,6 +1,8 @@
 from app import db
 from flask import session
 
+#usrDatabases = session['usrDatabases']
+
 class Queries():
 
     def __init__(self):
@@ -113,14 +115,23 @@ class Queries():
 # DEPOSITS ALL
 ######################################################################
     def deposits_all(self):
+
+        usrDatabases = session['usrDatabases']
+        if usrDatabases is None:
+            usrDatabases = ['SJM']
+
+        sql_parms = usrDatabases
+        format_strings = ','.join(['%s'] * len(usrDatabases))
+
         json_deposits = []
         cursor = self.conn.cursor()
         #BOGS DOWN IF TOO MANY DEPOSITS, MUST LIMIT SELECTION
         sql = """SELECT deposit_id, deposit_name
         FROM deposit
-        WHERE database_name = 'sjm'
-        ORDER BY deposit_name """
-        cursor.execute(sql)
+        WHERE database_name IN ({db_list})
+        ORDER BY deposit_name """.format(db_list=format_strings)
+
+        cursor.execute(sql, sql_parms)
         self.conn.close()
         rows = cursor.fetchall()
         #print('Deposit models rows ')
@@ -136,24 +147,16 @@ class Queries():
 ######################################################################
     def deposits_by_district(self, district_id):
 
-        #GET DATABASES AS ARRAY OF STRINGS
-        usrDatabases = session.get('usrDatabases')
-        print('Model(usrDatabases): ', usrDatabases, type(usrDatabases))
-        objects = JSON.parse(usrDatabases)
-        print('objects ', objects, type(objects))
-
-
-        format_strings = ','.join(['%s'] * len(objects))
-        print('format_strings ', format_strings)
-        tuple_of_dbs = tuple(usrDatabases)
-        print('Model(tuple_of_dbs): ', tuple_of_dbs)
-
-
-        usrDatabases = ['SJM']
+        usrDatabases = session['usrDatabases']
         if usrDatabases is None:
             usrDatabases = ['SJM']
 
-        print('Models - usrDatabase: ', usrDatabase)
+        district_id_str = str(district_id)
+        sql_parms = [district_id_str]
+        sql_parms.extend(usrDatabases)
+        format_strings = ','.join(['%s'] * len(usrDatabases))
+        #print('Model/deposits_by_district (format_strings) ', format_strings)
+
         json_deposits = []
         cursor = self.conn.cursor()
         sql = """SELECT DISTINCT d.deposit_id, d.deposit_name,
@@ -168,10 +171,10 @@ class Queries():
             LEFT JOIN country c1 ON c1.country_id = d.country_id
             LEFT JOIN county c2 ON c2.county_id = d.county_id
             LEFT JOIN production p ON p.deposit_id = d.deposit_id
-            WHERE (dd.district_id = %s AND d.database_name IN ()%s))
-            ORDER BY d.deposit_id """ % format_strings
+            WHERE dd.district_id = %s AND d.database_name IN ({db_list})
+            ORDER BY d.deposit_id """ .format(db_list=format_strings)
 
-        cursor.execute(sql, (district_id, usrDatabase))
+        cursor.execute(sql, sql_parms)
         self.conn.close()
         rows = cursor.fetchall()
         #Convert to JSON format
@@ -225,8 +228,16 @@ class Queries():
 ######################################################################
     def deposits_by_county(self, county_id, state_id):
         #print('type county_id ', type(county_id))
+        usrDatabases = session['usrDatabases']
+        if usrDatabases is None:
+            usrDatabases = ['SJM']
+
         county_id = str(county_id)
         state_id = str(state_id)
+        sql_parms = [county_id, state_id]
+        sql_parms.extend(usrDatabases)
+        format_strings = ','.join(['%s'] * len(usrDatabases))
+
         json_deposits = []
         cursor = self.conn.cursor()
         sql = """SELECT DISTINCT d.deposit_id, d.deposit_name,
@@ -238,11 +249,11 @@ class Queries():
             LEFT JOIN state s ON s.state_id = d.state_id
             LEFT JOIN country c1 ON c1.country_id = d.country_id
             LEFT JOIN production p ON p.deposit_id = d.deposit_id
-            WHERE (c.county_id = %s AND s.state_id = %s)
-            ORDER BY d.deposit_id """
+            WHERE c.county_id = %s AND s.state_id = %s AND d.database_name IN ({db_list})
+            ORDER BY d.deposit_id """.format(db_list=format_strings)
         #print('SQL ', sql)
         #print('county_id, state_id ', county_id,  ' ', state_id)
-        cursor.execute(sql, (county_id, state_id))
+        cursor.execute(sql, sql_parms)
         #print('SQL executed')
         self.conn.close()
         rows = cursor.fetchall()
@@ -264,7 +275,7 @@ class Queries():
         #GET INDIVIDUAL IDS AS ARRAY OF STRINGS
         list_of_ids = deposit_ids.split('!')
         list_of_ids.remove('')
-        #print('list_of_ids ', list_of_ids)
+        #print('list_of_ids ', list_of_ids, ' ', type(list_of_ids))
         format_strings = ','.join(['%s'] * len(list_of_ids))
         #print('format_strings ', format_strings)
         tuple_of_ids = tuple(list_of_ids)
@@ -293,7 +304,7 @@ class Queries():
                 'latitude':row[2], 'longitude':row[3],
                 'state':row[4], 'country':row[5], 'county':row[6],
                 'pounds_u3o8':row[7], 'grade':row[8], 'database_name':row[9]}
-            json_deposits.append(json_ref)
+            json_deposits.append(json_deposit)
             json_deposit = {}
 
         return json_deposits

@@ -189,7 +189,8 @@ input[type=submit] { align-self: flex-start;; min-width: 10em; }
   align-items: center;
   text-justify: none;
   transform: translate(-100%, 0%);
-  background: #2f3640;
+  background: #999999;
+  /* background: #2f3640; */
   height: 17px;
   width: 17px;
   border-radius: 40px;
@@ -210,8 +211,10 @@ input[type=submit] { align-self: flex-start;; min-width: 10em; }
 } */
 
 .search-btn{
-  color: #e84118;
-  background: #2f3640;
+  /* color: #e84118; */
+  color: #ff99aa;
+  /* background: #2f3640; */
+  background: #999999;
   width: 17px;
   height: 17px;
   border-radius: 50%;

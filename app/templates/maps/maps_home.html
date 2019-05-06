@@ -166,6 +166,7 @@ var doAjax_deposits_by_district = function(inputValue) {
                   state = object.state
                   pounds_u3o8 = object.pounds_u3o8
                   grade = object.grade
+                  database = object.database_name
                   description = country
                   if (state) {
                      description =  state + ', ' + description
@@ -174,7 +175,7 @@ var doAjax_deposits_by_district = function(inputValue) {
                      description =  county + ' County, ' + description
                   }
 
-                  description =  description + ' :Grade = ' + grade + ': Pounds U3O8 = ' + pounds_u3o8
+                  description =  description + ' :Grade = ' + grade + ': Pounds U3O8 = ' + pounds_u3o8 + ' :Database = ' + database
 
                   label = deposit_id + ': ' + deposit_name +
                     ': ' + district_name

@@ -11,7 +11,8 @@ build/
 
 venv
 
-app/static/
+app/static/pdfs
+app/static/img
 prospects/
 
 .DS_Store

@@ -11,6 +11,7 @@
      <link href="https://cesiumjs.org/releases/1.53/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
      <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+     <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script> -->
      <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.full.min.js"></script>
      <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js">
     </script>
@@ -46,7 +47,7 @@
                <h3>Select Databases:</h3>
         <div class="modal-body">
             <form action="">
-                <input id="myUMRDS" type="checkbox" oninput="submit_dbs('MRDS')">MRDS<br>
+                <input id="myMRDS" type="checkbox" oninput="submit_dbs('MRDS')">MRDS<br>
                 <input id="myULD" type="checkbox" oninput="submit_dbs('ULD')">ULD<br>
                 <input id="myDRUM" type="checkbox" oninput="submit_dbs('DRUM')">DRUM<br>
                 <input id="mySJM" type="checkbox" oninput="submit_dbs('SJM')" checked>SJM<br>
@@ -61,8 +62,15 @@
       var modal = document.getElementById('simpleModal');
       var closeBtn = document.getElementsByClassName('closeBtn')[0];
 
-      //usrDbs is the array of databases to use
-      var usrDbs = ['SJM'];
+      var usrDbs = ['SJM']
+      usrDbs = doAjax_get_current_dbs();
+      //console.log('base.html: At Very Start: usrDbs ', usrDbs);
+
+      // function setUsrDbs(){
+      //   doAjax_get_current_dbs();
+      //   console.log('setUsrDbs: (usrDbs) ', usrDbs)
+      // }
+
 
       optionBtn.addEventListener('click', openModal);
       closeBtn.addEventListener('click', closeModal);
@@ -71,7 +79,7 @@
        function openModal(){
          //console.log('Opening the modal');
          modal.style.display = 'block';
-         //doAjax_openModal(usrDbs);
+         doAjax_openModal();
        }
 
        function closeModal(){
@@ -81,13 +89,17 @@
        }
 
        function submit_dbs(input){
+         //doAjax_get_current_dbs();
          var in_arr = jQuery.inArray( input, usrDbs )
+         //console.log('Submit before: (usrDbs) ', usrDbs)
+         //console.log('Submit: (input) ', input)
+         //console.log('Submit: (in_arr) ', in_arr)
          if(in_arr == -1){
            usrDbs.push(input)
          } else {
            usrDbs.splice($.inArray(input, usrDbs),1);
          }
-         console.log('Submit: ', usrDbs)
+         //console.log('Submit after: ', usrDbs)
        }
 
        function outsideClick(e){
@@ -97,54 +109,89 @@
        }
 
        //*************************************************************
+       //AJAX CALL TO UPDATE DBS FOR SUBMIT
+       //*************************************************************
+      function doAjax_get_current_dbs() {
+           //console.log("doAjax_get_current_dbs: ready to go");
+            $.ajax({
+               type: "GET",
+               dataType: 'json',
+               contentType: 'application/json',
+               url: "http://127.0.0.1:5000/options_get_current_dbs",
+               success: function(data) {
+                    //console.log('Open Modal Success: (data)', data, jQuery.type(data))
+                    //objects = JSON.parse(data)
+                    usrDbs = data
+                    //console.log('doAjax_get_current_dbs: success (usrDbs)', usrDbs)
+             },
+             complete: function(){
+                //console.log('doAjax_get_current_dbs: complete)',usrDbs)
+                //return usrDbs
+             }
+           });
+           return usrDbs
+         };
+
+       //*************************************************************
        //AJAX CALL TO OPEN MODAL AND UPDATE DBS
        //*************************************************************
        var doAjax_openModal = function() {
-           console.log("Open Modal: (usrDbs)", usrDbs, jQuery.type(usrDbs));
+           //console.log("Open Modal: (usrDbs)", usrDbs, jQuery.type(usrDbs));
             $.ajax({
                type: "GET",
                url: "http://127.0.0.1:5000/options_home",
                success: function(data) {
-                    console.log('Open Modal Success: (data)', data, jQuery.type(data))
-                    objects = JSON.parse(data)
-                    console.log('Open Modal Success: (objects)', objects, jQuery.type(objects))
+                    //console.log('Open Modal Success: (data)', data, jQuery.type(data))
+                    //objects = JSON.parse(data)
+                    usrDbs = data
+                    //usrDbs = objects
+                    //console.log('Open Modal (usrDbs)', usrDbs)
+                    //console.log("Open Modal (start)", objects);
+                    $("#myMRDS").prop("checked", false);
+                    $("#myULD").prop("checked", false);
+                    $("#myDRUM").prop("checked", false);
+                    $("#mySJM").prop("checked", false);
+                     $.each(usrDbs, function(i, usrDb) {
+                       if (usrDb=='MRDS'){
+                         //console.log("MRDS picked");
+                         $("#myMRDS").prop("checked", true);
+                       } else if (usrDb=='ULD'){
+                         //console.log("ULD picked");
+                         $("#myULD").prop("checked", true);
+                       } else if (usrDb=='DRUM'){
+                         //console.log("DRUM picked");
+                         $("#myDRUM").prop("checked", true);
+                       } else {
+                         //console.log("SJM picked");
+                         $("#mySJM").prop("checked", true);
+                       }
+                    });
                  },
                complete: function(){
-                 console.log("Open Modal Completed (objects)", objects);
-                  $.each(objects, function(i, object) {
-                    console.log("Open Modal Completed (object)", object);
-                    switch(object){
-                      case 'MRDS': $("#myMRDS").prop("checked", true);
-                      case 'ULD': $("#myULD").prop("checked", true);
-                      case 'DRUM': $("#myDRUM").prop("checked", true);
-                      case 'SJM': $("#mySJM").prop("checked", true);
-                     }
-               });
-             }
-           });
-         };
+                  //console.log("Open Modal (objects)", objects);
+                  //console.log('Type: ', jQuery.type(objects))
+               }
+
+             });
+           };
+
 
        //*************************************************************
        //AJAX CALL TO CLOSE MODAL AND UPDATE DB
        //*************************************************************
         var doAjax_closeModal = function(usrDbs) {
-            t = {one:"one", two:"two"}
-            tt = JSON.stringify(t)
-            console.log('Close Modal Start: usrDbs ', usrDbs)
+          //console.log('Close Modal(usrDbs): ', usrDbs)
              $.ajax({
                 type: "POST",
                 url: "http://127.0.0.1:5000/options_home",
                 data: JSON.stringify(usrDbs),
                 dataType: 'json',
                 contentType: 'application/json',
-                success: function(data) {
-                  //objects = JSON.parse(data)
-                  console.log('Close Modal Success: ')
-                  //usrDbs = result
+                success: function(s) {
+                  //console.log('Close Modal(usrDbs): ', usrDbs)
                   },
           });
         }
-
 
   </script>
 
@@ -157,6 +204,5 @@
   {% endfor %}
   {% block content %}{% endblock %}
 </section>
-
 
 </html>
