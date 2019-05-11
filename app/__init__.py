@@ -11,6 +11,7 @@ def create_app():
     app.config.from_object(Config)
 
     db.init_app(app)
+    #session['usrMapLabels_yn'] = 'n'
 
     from app import models
 

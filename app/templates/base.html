@@ -43,15 +43,30 @@
 <!-- SET UP OPTION MODAL -->
 <div id="simpleModal" class="modal">
     <div class="modal-content">
-               <span class="closeBtn">&times;</span>
-               <h3>Select Databases:</h3>
+      <!-- <div style="top:100px; background-color:pink"><span class="closeBtn">&times;</span></div> -->
+
+<!-- DATABASE SELECTION -->
         <div class="modal-body">
+          <h3 style="margin:2px;">Select Databases:</h3>
             <form action="">
-                <input id="myMRDS" type="checkbox" oninput="submit_dbs('MRDS')">MRDS<br>
-                <input id="myULD" type="checkbox" oninput="submit_dbs('ULD')">ULD<br>
-                <input id="myDRUM" type="checkbox" oninput="submit_dbs('DRUM')">DRUM<br>
-                <input id="mySJM" type="checkbox" oninput="submit_dbs('SJM')" checked>SJM<br>
+                <input id="myMRDS" type="checkbox" oninput="select_dbs('MRDS')">MRDS<br>
+                <input id="myULD" type="checkbox" oninput="select_dbs('ULD')">ULD<br>
+                <input id="myDRUM" type="checkbox" oninput="select_dbs('DRUM')">DRUM<br>
+                <input id="mySJM" type="checkbox" oninput="select_dbs('SJM')" checked>SJM<br>
             </form>
+        </div>
+
+<!-- LABELING SELECTION -->
+        <div class="modal-body">
+          <h3 style="margin:2px">Show map labels?</h3>
+            <form action="">
+                <span>yes<input id="myYes" name="y_n" type="radio" oninput="select_show_labels('y')">no<input id="myNo" name="y_n" type="radio" oninput="select_show_labels('n')" checked></span>
+            </form>
+        </div>
+
+<!-- SUBMIT BUTTON -->
+        <div class="modal-submit">
+          <button class="submitBtn" id="closeBtn">Submit</button>
         </div>
     </div>
 </div>
@@ -60,17 +75,11 @@
 
       var optionBtn = document.getElementById('optionBtn');
       var modal = document.getElementById('simpleModal');
-      var closeBtn = document.getElementsByClassName('closeBtn')[0];
+      var closeBtn = document.getElementById('closeBtn');
+      var usrDatabases = ['SJM']
+      var usrMapLabels_yn = 'n'
 
-      var usrDbs = ['SJM']
-      usrDbs = doAjax_get_current_dbs();
-      //console.log('base.html: At Very Start: usrDbs ', usrDbs);
-
-      // function setUsrDbs(){
-      //   doAjax_get_current_dbs();
-      //   console.log('setUsrDbs: (usrDbs) ', usrDbs)
-      // }
-
+      //usrDbs = doAjax_get_current_dbs();
 
       optionBtn.addEventListener('click', openModal);
       closeBtn.addEventListener('click', closeModal);
@@ -83,23 +92,28 @@
        }
 
        function closeModal(){
+         //console.log('closing the modal ');
+
          modal.style.display = 'none';
-         doAjax_closeModal(usrDbs);
+         doAjax_closeModal();
          //doAjax_openModal(usrDbs);
        }
 
-       function submit_dbs(input){
-         //doAjax_get_current_dbs();
-         var in_arr = jQuery.inArray( input, usrDbs )
-         //console.log('Submit before: (usrDbs) ', usrDbs)
-         //console.log('Submit: (input) ', input)
-         //console.log('Submit: (in_arr) ', in_arr)
+       function select_dbs(input){
+         var in_arr = jQuery.inArray( input, usrDatabases )
+         //console.log('selecting input', input)
          if(in_arr == -1){
-           usrDbs.push(input)
+           usrDatabases.push(input)
          } else {
-           usrDbs.splice($.inArray(input, usrDbs),1);
+           usrDatabases.splice($.inArray(input, usrDatabases),1);
          }
-         //console.log('Submit after: ', usrDbs)
+         //console.log('Selected dbs: ', usrDbs)
+       }
+
+       function select_show_labels(input){
+         //console.log('selecting show labels', input)
+         usrMapLabels_yn = input
+         //console.log('select_show_labels (usrMapLabels_yn): ', usrMapLabels_yn)
        }
 
        function outsideClick(e){
@@ -109,86 +123,63 @@
        }
 
        //*************************************************************
-       //AJAX CALL TO UPDATE DBS FOR SUBMIT
-       //*************************************************************
-      function doAjax_get_current_dbs() {
-           //console.log("doAjax_get_current_dbs: ready to go");
-            $.ajax({
-               type: "GET",
-               dataType: 'json',
-               contentType: 'application/json',
-               url: "http://127.0.0.1:5000/options_get_current_dbs",
-               success: function(data) {
-                    //console.log('Open Modal Success: (data)', data, jQuery.type(data))
-                    //objects = JSON.parse(data)
-                    usrDbs = data
-                    //console.log('doAjax_get_current_dbs: success (usrDbs)', usrDbs)
-             },
-             complete: function(){
-                //console.log('doAjax_get_current_dbs: complete)',usrDbs)
-                //return usrDbs
-             }
-           });
-           return usrDbs
-         };
-
-       //*************************************************************
-       //AJAX CALL TO OPEN MODAL AND UPDATE DBS
+       //AJAX CALL TO OPEN MODAL AND UPDATE OPTIONS
        //*************************************************************
        var doAjax_openModal = function() {
-           //console.log("Open Modal: (usrDbs)", usrDbs, jQuery.type(usrDbs));
+            //console.log("doAjax_openModal");
             $.ajax({
                type: "GET",
                url: "http://127.0.0.1:5000/options_home",
                success: function(data) {
-                    //console.log('Open Modal Success: (data)', data, jQuery.type(data))
-                    //objects = JSON.parse(data)
-                    usrDbs = data
-                    //usrDbs = objects
-                    //console.log('Open Modal (usrDbs)', usrDbs)
-                    //console.log("Open Modal (start)", objects);
+
+                    usrDatabases = data.usrDatabases
+                    usrMapLabels_yn = data.usrMapLabels_yn
+                    //console.log("doAjax_openModal usrDatabases", usrDatabases);
+                    //console.log("doAjax_openModal usrMapLabels_yn", usrMapLabels_yn);
+
                     $("#myMRDS").prop("checked", false);
                     $("#myULD").prop("checked", false);
                     $("#myDRUM").prop("checked", false);
                     $("#mySJM").prop("checked", false);
-                     $.each(usrDbs, function(i, usrDb) {
-                       if (usrDb=='MRDS'){
-                         //console.log("MRDS picked");
-                         $("#myMRDS").prop("checked", true);
-                       } else if (usrDb=='ULD'){
-                         //console.log("ULD picked");
-                         $("#myULD").prop("checked", true);
-                       } else if (usrDb=='DRUM'){
-                         //console.log("DRUM picked");
-                         $("#myDRUM").prop("checked", true);
-                       } else {
-                         //console.log("SJM picked");
-                         $("#mySJM").prop("checked", true);
+                    //$("#myYes").prop("checked", false);
+                    //$("#myNo").prop("checked", false);
+
+                    if (usrMapLabels_yn == 'y'){
+                      $("#myYes").prop("checked", true);
+                    } else {
+                      $("#myNo").prop("checked", true);
+                    }
+
+                    $.each(usrDatabases, function(i, usrDatabase) {
+                         if (usrDatabase=='MRDS'){
+                          $("#myMRDS").prop("checked", true);
+                       } else if (usrDatabase=='ULD'){
+                          $("#myULD").prop("checked", true);
+                       } else if (usrDatabase=='DRUM'){
+                          $("#myDRUM").prop("checked", true);
+                       } else if (usrDatabase=='SJM'){
+                          $("#mySJM").prop("checked", true);
                        }
+
                     });
                  },
                complete: function(){
-                  //console.log("Open Modal (objects)", objects);
-                  //console.log('Type: ', jQuery.type(objects))
+
                }
-
              });
-           };
-
+           }
 
        //*************************************************************
        //AJAX CALL TO CLOSE MODAL AND UPDATE DB
        //*************************************************************
-        var doAjax_closeModal = function(usrDbs) {
-          //console.log('Close Modal(usrDbs): ', usrDbs)
+        var doAjax_closeModal = function() {
              $.ajax({
                 type: "POST",
                 url: "http://127.0.0.1:5000/options_home",
-                data: JSON.stringify(usrDbs),
+                data: JSON.stringify({"usrDatabases": usrDatabases, "usrMapLabels_yn": usrMapLabels_yn}),
                 dataType: 'json',
                 contentType: 'application/json',
                 success: function(s) {
-                  //console.log('Close Modal(usrDbs): ', usrDbs)
                   },
           });
         }

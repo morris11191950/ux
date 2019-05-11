@@ -18,7 +18,7 @@
       <option></option>
 </select>
 
-<select style="width:25%"; id="button_deposits_map" multiple="multiple">
+<select style="width:25%"; id="button_deposits_map" multiple ="multiple">
       <option></option>
 </select>
 
@@ -42,6 +42,9 @@ $(document).ready(function() {
 
   $("#wait").show();
 
+  var index = 0
+  var usrMapLabels_yn = 'n'
+
   //*************************************************************
   //   AJAX CALL TO RETRIEVE DISTRICTS
   //*************************************************************
@@ -53,7 +56,7 @@ $(document).ready(function() {
           $.each(objects, function(i, object) {
                $temp = "<option " + "value="  + object.district_id + ">"
                     + object.district_name + '</option>'
-               //console.log('$temp ', $temp)
+               //console.log('Districts: ajax $temp ', $temp)
                $('#button_districts_map').append($temp);
           });
        }
@@ -72,7 +75,7 @@ $(document).ready(function() {
                 var state_county_ids = object.state_id + ':' + object.county_id
                 $temp = "<option " + "value="  + state_county_ids + ">"
                      + state_county + '</option>'
-                //console.log('$temp ', $temp)
+                //console.log('Counties: ajax $temp ', $temp)
                 $('#button_counties_map').append($temp);
            });
         }
@@ -89,7 +92,8 @@ $(document).ready(function() {
             $.each(objects, function(i, object) {
                  $temp = "<option " + "value="  + object.deposit_id + ">"
                       + object.deposit_name + '</option>'
-                 //console.log('ajax $temp ', $temp)
+                 index += 1
+                 //console.log('Deposits: ajax $temp ', index, ': ',$temp)
                  $('#button_deposits_map').append($temp);
             });
          },
@@ -108,6 +112,7 @@ $selectElement =  $("#button_districts_map").select2({
 $("#button_districts_map").change(function() {
      var selected_id = $(this).children("option:selected").val();
      //console.log('selected_id', selected_id)
+     doAjax_getSessionOptions();
      doAjax_deposits_by_district(selected_id);
 });
 
@@ -121,6 +126,7 @@ $selectElement =  $("#button_counties_map").select2({
 $("#button_counties_map").change(function() {
      var selected_id = $(this).children("option:selected").val();
      //console.log('selected_id', selected_id)
+     doAjax_getSessionOptions();
      doAjax_deposits_by_county(selected_id);
 });
 
@@ -128,16 +134,32 @@ $("#button_counties_map").change(function() {
 //   BY_DEPOSIT SELECTION
 //*************************************************************
 $selectElement =  $("#button_deposits_map").select2({
-  placeholder : 'Select a Deposit'
+  placeholder : 'Select a Deposit',
+  minimumInputLength: 2
 });
 
 $("#button_deposits_map").change(function() {
-  var selected_ids = $("#button_deposits_map").val()
-     //console.log('selected_ids in html ', selected_ids)
-     //console.log('type temp ', jQuery.type(temp))
-     //var selected_ids = $(this).children("option:selected").val();
-     doAjax_deposits_by_deposit(selected_ids);
+      var selected_ids = $("#button_deposits_map").val()
+      doAjax_getSessionOptions();
+      doAjax_deposits_by_deposit(selected_ids);
 });
+
+
+//*************************************************************
+//AJAX CALL TO GET SESSION OPTIONS
+//*************************************************************
+var doAjax_getSessionOptions = function() {
+     //console.log("doAjax_openModal");
+     $.ajax({
+        type: "GET",
+        url: "http://127.0.0.1:5000/options_home",
+        success: function(data) {
+             usrMapLabels_yn = data.usrMapLabels_yn
+          },
+        complete: function(){
+        }
+    });
+  }
 
 //*************************************************************
 //AJAX CALL TO RETRIEVE DEPOSIT COORDS FOR SELECTED DISTRICT,
@@ -186,9 +208,6 @@ var doAjax_deposits_by_district = function(inputValue) {
                   lats.push(object.latitude);
                   lons.push(object.longitude);
                   labels.push(label);
-                  //console.log("end of first ");
-
-                  //states.push(state)
 
             });
         },
@@ -198,6 +217,10 @@ var doAjax_deposits_by_district = function(inputValue) {
 
              Cesium.Ion.defaultAccessToken = '{{CESIUM_API_KEY}}';
              var viewer = new Cesium.Viewer('cesiumContainer');
+             var showText_tf = false
+             if  (usrMapLabels_yn == 'y'){
+               showText_tf = true
+             }
 
              for (var i = 0; i < deposit_names.length; i++) {
                   //console.log('labels[i] ', labels[i])
@@ -213,7 +236,8 @@ var doAjax_deposits_by_district = function(inputValue) {
                       description: descriptions[i],
                       label : {
                           //text : deposit_ids[i],
-                          //text : deposit_names[i],
+                          show: showText_tf,
+                          text : deposit_names[i],
                           font : '14pt monospace',
                           style: Cesium.LabelStyle.FILL_AND_OUTLINE,
                           outlineWidth : 2,
@@ -221,12 +245,12 @@ var doAjax_deposits_by_district = function(inputValue) {
                           pixelOffset : new Cesium.Cartesian2(0, -9)
                       }
                   });
-              }
+                }
 
              viewer.zoomTo(viewer.entities);
 
          }
-      });
+    });
  };
 
  //*************************************************************
@@ -282,10 +306,6 @@ var doAjax_deposits_by_district = function(inputValue) {
                    lons.push(object.longitude);
                    labels.push(label);
                    databases.push(database)
-                   //console.log("end of first ");
-
-                   //states.push(state)
-
              });
          },
           complete: function(){
@@ -294,6 +314,10 @@ var doAjax_deposits_by_district = function(inputValue) {
 
               Cesium.Ion.defaultAccessToken = '{{CESIUM_API_KEY}}';
               var viewer = new Cesium.Viewer('cesiumContainer');
+              var showText_tf = false
+              if  (usrMapLabels_yn == 'y'){
+                showText_tf = true
+              }
 
               for (var i = 0; i < deposit_names.length; i++) {
                    //console.log('labels[i] ', labels[i])
@@ -308,8 +332,8 @@ var doAjax_deposits_by_district = function(inputValue) {
                        },
                        description: descriptions[i],
                        label : {
-                           //text : deposit_ids[i],
-                           //text : deposit_names[i],
+                           show: showText_tf,
+                           text : deposit_names[i],
                            font : '14pt monospace',
                            style: Cesium.LabelStyle.FILL_AND_OUTLINE,
                            outlineWidth : 2,
@@ -322,7 +346,7 @@ var doAjax_deposits_by_district = function(inputValue) {
               viewer.zoomTo(viewer.entities);
 
           }
-       });
+      });
   };
 
   //*************************************************************
@@ -391,6 +415,10 @@ var doAjax_deposits_by_district = function(inputValue) {
 
                Cesium.Ion.defaultAccessToken = '{{CESIUM_API_KEY}}';
                var viewer = new Cesium.Viewer('cesiumContainer');
+               var showText_tf = false
+               if  (usrMapLabels_yn == 'y'){
+                 showText_tf = true
+               }
 
                for (var i = 0; i < deposit_names.length; i++) {
                     console.log('labels[i] ', labels[i])
@@ -405,8 +433,8 @@ var doAjax_deposits_by_district = function(inputValue) {
                         },
                         description: descriptions[i],
                         label : {
-                            //text : deposit_ids[i],
-                            //text : deposit_names[i],
+                            show: showText_tf,
+                            text : deposit_names[i],
                             font : '14pt monospace',
                             style: Cesium.LabelStyle.FILL_AND_OUTLINE,
                             outlineWidth : 2,
@@ -419,11 +447,8 @@ var doAjax_deposits_by_district = function(inputValue) {
                viewer.zoomTo(viewer.entities);
 
            }
-        });
+      });
    };
-
-
-
 });
 
 

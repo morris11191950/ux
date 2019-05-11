@@ -87,20 +87,45 @@ nav ul li {display: block; padding: 0.5rem; }
   right:2px;
   top:35px;
   border-radius: 10px;
-  padding: 0px 10px 10px 10px;
+  padding: 10px 10px 10px 10px;
   color:black;
-  width:15%;
-  box-shadow: 0 5px 8px 0 rgba(0,0,0,0.2), 0 7px 20px 0 rgba(0,0,0,0.17);
+  width:20%;
+  /* box-shadow: 0 5px 8px 0 rgba(0,0,0,0.2), 0 7px 20px 0 rgba(0,0,0,0.17); */
 }
 
-.closeBtn{
-  color:#ccc;
-  float: right;
-  font-size: 30px;
+.modal-body{
+  z-index:1;
+  width:100%;
+  /* right:2px; */
+  /* top:10%; */
+  background-color:#f2f2f2;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 5px;
+  border-color: gray;
+  margin-top: 10px;
+  padding: 0px;
 }
 
-.closeBtn:hover, closeBtn:focus{
+.modal-submit{
+  margin-top:10px;
+  text-align: center;
+  /* border-radius: 5px; */
+  width:100%;
+  background-color:white;
+}
+
+.submitBtn{
   color:black;
+  border-radius: 10px;
+  background-color:#f2f2f2;
+  width:90%;
+  font-size: 20px;
+}
+
+.submitBtn:hover, .submitBtn:focus{
+  color:black;
+  background-color:#999999;
   text-decoration: none;
   cursor:pointer;
 }
