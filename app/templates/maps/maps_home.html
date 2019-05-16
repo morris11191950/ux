@@ -32,7 +32,6 @@ LOADING PROGRESS ICON
      left:50%;padding:2px;">
      <img src="{{url_for('static', filename='img/demo_wait.gif')}}"
           width="64" height="64" />
-     <!-- <img src='demo_wait.gif' width="64" height="64" /> -->
      <br>Loading..
 </div>
 
@@ -135,7 +134,7 @@ $("#button_counties_map").change(function() {
 //*************************************************************
 $selectElement =  $("#button_deposits_map").select2({
   placeholder : 'Select a Deposit',
-  minimumInputLength: 2
+  //minimumInputLength: 3
 });
 
 $("#button_deposits_map").change(function() {

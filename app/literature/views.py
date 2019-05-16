@@ -60,7 +60,7 @@ def references_by_category(category_id):
 
 @literature.route('/references_by_specialCollection/<int:spcol_id>')
 def references_by_specialCollection(spcol_id):
-    #print('Views:references_by_specialCollection')
+    #print('Views:references_by_specialCollection spcol_id', spcol_id)
     rows = Queries().references_by_specialCollection(spcol_id)
     jsonStr = json.dumps(rows)
     j = jsonify(Refs=jsonStr)

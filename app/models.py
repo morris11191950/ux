@@ -129,7 +129,7 @@ class Queries():
         sql = """SELECT deposit_id, deposit_name
         FROM deposit
         WHERE database_name IN ({db_list})
-        ORDER BY deposit_name """.format(db_list=format_strings)
+        ORDER BY deposit_name LIMIT 1000""".format(db_list=format_strings)
 
         cursor.execute(sql, sql_parms)
         self.conn.close()
@@ -148,6 +148,7 @@ class Queries():
     def deposits_by_district(self, district_id):
 
         usrDatabases = session['usrDatabases']
+        #print('1Model/deposits_by_district (usrDatabases) ', usrDatabases)
         if usrDatabases is None:
             usrDatabases = ['SJM']
 
@@ -155,7 +156,6 @@ class Queries():
         sql_parms = [district_id_str]
         sql_parms.extend(usrDatabases)
         format_strings = ','.join(['%s'] * len(usrDatabases))
-        #print('Model/deposits_by_district (format_strings) ', format_strings)
 
         json_deposits = []
         cursor = self.conn.cursor()
@@ -362,6 +362,118 @@ class Queries():
         return json_deposits
 
 #######################################################################
+# DEPOSITS - EDIT PAGE
+######################################################################
+    def deposits_edit(self, id):
+        #print('In model', id)
+        json_deposits = []
+        cursor = self.conn.cursor()
+        sql = """SELECT d.deposit_id, d.deposit_name, d.deposit_aliases,
+                d.latitude, d.longitude, d.database_name, p.pounds_u3o8,
+                p.grade, g.host_geologic_unit, g.ore_type, m.discovery_year,
+                c.country, s.state, cc.county, d.references_dep, m.type,
+                m.commodities
+            FROM deposit d
+            LEFT JOIN production p ON p.deposit_id = d.deposit_id
+            LEFT JOIN geology g ON g.deposit_id = d.deposit_id
+            LEFT JOIN mine_info m ON m.deposit_id = d.deposit_id
+            LEFT JOIN country c ON c.country_id = d.country_id
+            LEFT JOIN state s ON s.state_id = d.state_id
+            LEFT JOIN county cc ON cc.county_id = d.county_id
+            WHERE d.deposit_id = %s"""
+        cursor.execute(sql, id)
+        self.conn.close()
+        rows = cursor.fetchall()
+        #Convert to JSON format
+        for row in rows:
+            #print('In model row', row)
+            json_deposit = {'deposit_id': row[0], 'deposit_name': row[1],
+                'deposit_aliases': row[2], 'latitude': row[3], 'longitude': row[4],
+                'database_name': row[5], 'production': row[6], 'grade': row[7],
+                'geologic_unit': row[8], 'ore_type': row[9],
+                'discovery_year' : row[10], 'country': row[11],
+                'state': row[12], 'county' : row[13], 'ref_ids' : row[14],
+                'mine_type': row[15], 'commodities': row[16]}
+            json_deposits.append(json_deposit)
+            json_deposit = {}
+        return json_deposits
+
+#######################################################################
+# DEPOSITS - EDIT PAGE FOR DISTRICTS
+######################################################################
+    def districts_by_deposit(self, deposit_id):
+        json_refs = []
+        cursor = self.conn.cursor()
+        sql = """SELECT r.district_id, d.district_name
+            FROM district_to_deposit r
+            INNER JOIN district d ON d.district_id = r.district_id
+            WHERE r.deposit_id = %s """
+        cursor.execute(sql, deposit_id)
+        self.conn.close()
+        rows = cursor.fetchall()
+        #Convert to JSON format
+        for row in rows:
+            json_ref = {'district_id': row[0], 'district_name': row[1]}
+            json_refs.append(json_ref)
+            json_ref = {}
+        return json_refs
+
+#######################################
+# DEPOSITS EDIT - SAVE
+#######################################
+    def deposits_edit_submit(self, deposit_id, deposit_name, aliases, latitude, longitude, database_name, production, grade, geologic_unit, ore_type, discovery_year, country, state, county, ref_ids, mine_type, commodities):
+
+        lat_dbl = float(latitude)
+        lon_dbl = float(longitude)
+
+        cursor = self.conn.cursor()
+        sql = """UPDATE deposit
+            SET deposit_name = %s, deposit_aliases = %s, latitude = %s, longitude = %s, database_name = %s, references_dep = %s
+            WHERE deposit_id = %s"""
+        cursor.execute(sql, (deposit_name, aliases, lat_dbl, lon_dbl, database_name, ref_ids,  deposit_id))
+
+        sql = """INSERT INTO geology (deposit_id, host_geologic_unit, ore_type)
+                VALUES (%s, %s, %s)
+                ON DUPLICATE KEY UPDATE
+                host_geologic_unit = VALUES(host_geologic_unit),
+                ore_type = VALUES(ore_type)"""
+        cursor.execute(sql, (deposit_id, geologic_unit, ore_type))
+
+        sql = """INSERT INTO mine_info (deposit_id, type, discovery_year, commodities)
+                VALUES (%s, %s, %s, %s)
+                ON DUPLICATE KEY UPDATE
+                type = VALUES(type),
+                discovery_year = VALUES(discovery_year),
+                commodities = VALUES(commodities)"""
+        cursor.execute(sql, (deposit_id, mine_type, discovery_year, commodities))
+
+        sql = """INSERT INTO production (deposit_id, pounds_u3o8, grade)
+                VALUES (%s, %s, %s)
+                ON DUPLICATE KEY UPDATE
+                pounds_u3o8 = VALUES(pounds_u3o8),
+                grade = VALUES(grade)"""
+        cursor.execute(sql, (deposit_id, production, grade))
+
+        self.conn.close()
+
+    def deposits_edit_submit_districts(self, deposit_id, district_ids):
+        #print('in models, district_ids ', district_ids)
+        cursor = self.conn.cursor()
+        sql = """DELETE
+           FROM district_to_deposit
+           WHERE deposit_id = %s """
+        cursor.execute(sql, (deposit_id))
+        self.conn.commit()
+
+        for district_id in district_ids:
+             sql = """INSERT IGNORE
+                INTO district_to_deposit (district_id, deposit_id)
+                VALUES(%s, %s)"""
+             cursor.execute(sql, (district_id, deposit_id))
+             self.conn.commit()
+        cursor.close()
+
+#######################################################################
 # REFERENCES ALL
 ######################################################################
     def references_all(self):
@@ -430,7 +542,7 @@ class Queries():
 # REFERENCES BY SPECIALCOLLECTION
 ######################################################################
     def references_by_specialCollection(self, spcol_id):
-        #print('spcol_id is: ', spcol_id)
+        print('Model spcol_id is: ')
         json_refs = []
         cursor = self.conn.cursor()
         sql = """SELECT r.reference_id, r.reference, r.filename, r.url
@@ -485,6 +597,7 @@ class Queries():
             json_refs.append(json_ref)
             json_ref = {}
         return json_refs
+
 #######################################################################
 # REFERENCE - EDIT PAGE FOR ALL DISTRICTS
 ######################################################################
@@ -534,7 +647,7 @@ class Queries():
     def specialCollections_by_reference(self, refid):
         json_refs = []
         cursor = self.conn.cursor()
-        #print('in models ', refid)
+        #print('in models specialCollections_by_reference refid ', refid)
         sql = """SELECT r.spcol_id, s.spcol_name, s.spcol_description
             FROM specialCollection_to_reference r
             INNER JOIN special_collection s ON s.spcol_id = r.spcol_id
@@ -544,7 +657,7 @@ class Queries():
         rows = cursor.fetchall()
         #Convert to JSON format
         for row in rows:
-            #print('category row1  ', row[1])
+            #print('row  ', row)
             json_ref = {'special_id': row[0],
                 'special_name': row[1], 'special_description': row[2]}
             json_refs.append(json_ref)

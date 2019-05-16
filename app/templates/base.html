@@ -43,7 +43,6 @@
 <!-- SET UP OPTION MODAL -->
 <div id="simpleModal" class="modal">
     <div class="modal-content">
-      <!-- <div style="top:100px; background-color:pink"><span class="closeBtn">&times;</span></div> -->
 
 <!-- DATABASE SELECTION -->
         <div class="modal-body">
@@ -79,8 +78,6 @@
       var usrDatabases = ['SJM']
       var usrMapLabels_yn = 'n'
 
-      //usrDbs = doAjax_get_current_dbs();
-
       optionBtn.addEventListener('click', openModal);
       closeBtn.addEventListener('click', closeModal);
       window.addEventListener('click', outsideClick);
@@ -92,11 +89,8 @@
        }
 
        function closeModal(){
-         //console.log('closing the modal ');
-
          modal.style.display = 'none';
          doAjax_closeModal();
-         //doAjax_openModal(usrDbs);
        }
 
        function select_dbs(input){
@@ -107,13 +101,11 @@
          } else {
            usrDatabases.splice($.inArray(input, usrDatabases),1);
          }
-         //console.log('Selected dbs: ', usrDbs)
        }
 
        function select_show_labels(input){
          //console.log('selecting show labels', input)
          usrMapLabels_yn = input
-         //console.log('select_show_labels (usrMapLabels_yn): ', usrMapLabels_yn)
        }
 
        function outsideClick(e){
@@ -134,15 +126,11 @@
 
                     usrDatabases = data.usrDatabases
                     usrMapLabels_yn = data.usrMapLabels_yn
-                    //console.log("doAjax_openModal usrDatabases", usrDatabases);
-                    //console.log("doAjax_openModal usrMapLabels_yn", usrMapLabels_yn);
 
                     $("#myMRDS").prop("checked", false);
                     $("#myULD").prop("checked", false);
                     $("#myDRUM").prop("checked", false);
                     $("#mySJM").prop("checked", false);
-                    //$("#myYes").prop("checked", false);
-                    //$("#myNo").prop("checked", false);
 
                     if (usrMapLabels_yn == 'y'){
                       $("#myYes").prop("checked", true);

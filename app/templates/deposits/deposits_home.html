@@ -162,13 +162,22 @@ var doAjax_databases = function() {
               $('#deposits_selected_display').empty()
               objects = JSON.parse(data.Deposits)
               $.each(objects, function(i, object) {
-                  r = "<b>" + object.deposit_name  + "</b>:      " + object.district_name + ":  " + object.country + ":  " + object.state
+                  r = "<b>" + object.deposit_name + " (" + object.deposit_id + "):" + "</b>" + object.district_name + ":  " + object.country + ":  " + object.state
                   $('#deposits_selected_display').append(
-                        "<li>" + r + "</li>")
+                        "<li>" + r + "</span><span class='depositEditButton'>[Edit]</span></li>")
                   });
                 },
           complete: function(){
             $("#wait").hide();
+
+            $(".depositEditButton").click(function() {
+                 var clickIndex = $(this).parent('li').index()
+                 console.log('deposits_home_html clickIndex', clickIndex);
+                 var depositIndex = objects[clickIndex].deposit_id;
+                 console.log('deposits_home_html depositIndex', depositIndex);
+                 theUrl = 'http://127.0.0.1:5000/deposits/deposits_edit/' + depositIndex
+                 window.open(theUrl, '_self');
+            });
                //console.log('Completed ajax call to retrieve deposits');
           }
        });
@@ -188,11 +197,20 @@ var doAjax_databases = function() {
                $.each(objects, function(i, object) {
                    r = "<b>" + object.deposit_name + " (" + object.deposit_id + "):" + "</b> (" + object.database_name + ")" + object.district_name + ":  " + object.country + ":  " + object.state
                    $('#deposits_selected_display').append(
-                         "<li>" + r + "</li>")
+                         "<li>" + r + "</span><span class='depositEditButton'>[Edit]</span></li>")
                    });
                  },
            complete: function(){
              $("#wait").hide();
+
+             $(".depositEditButton").click(function() {
+                  var clickIndex = $(this).parent('li').index()
+                  console.log('deposits_home_html clickIndex', clickIndex);
+                  var depositIndex = objects[clickIndex].deposit_id;
+                  console.log('deposits_home_html depositIndex', depositIndex);
+                  theUrl = 'http://127.0.0.1:5000/deposits/deposits_edit/' + depositIndex
+                  window.open(theUrl, '_self');
+             });
                 //console.log(r);
            }
         });
@@ -202,9 +220,7 @@ var doAjax_databases = function() {
    //AJAX CALL TO SEARCH FOR USR INPUT
    //*************************************************************
    var doAjax_deposits_search = function(usrFrag) {
-
         //console.log("In ajax - usrFrag", usrFrag);
-
         $("#wait").show();
         $.ajax({
            type: "GET",
@@ -215,15 +231,21 @@ var doAjax_databases = function() {
                 $.each(objects, function(i, object) {
                   r = "<b>" + object.deposit_name + " (" + object.deposit_id + ")" + "</b>    (" + object.database_name + "):" + object.district_name + ":  " + object.country + ":  " + object.state
                   $('#deposits_selected_display').append(
-                        "<li>" + r + "</li>")
+                        "<li>" + r + "</span><span class='depositEditButton'>[Edit]</span></li>")
                   });
                 },
             complete: function(){
                  $("#wait").hide();
+
+                 $(".depositEditButton").click(function() {
+                      var clickIndex = $(this).parent('li').index()
+                      var depositIndex = objects[clickIndex].deposit_id;
+                      theUrl = 'http://127.0.0.1:5000/deposits/deposits_edit/' + depositIndex
+                      window.open(theUrl, '_self');
+                 });
             }
          });
     };
-
 
 });
 
