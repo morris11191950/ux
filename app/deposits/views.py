@@ -80,7 +80,6 @@ def deposits_edit_load(deposit_id):
 
 @deposits.route('/deposits/deposits_edit/<deposit_id>')
 def deposits_edit(deposit_id):
-    #print('In edit view deposit_id', deposit_id)
     return render_template('deposits/edit.html', deposit_id=deposit_id)
 
 @deposits.route('/databases_all')
@@ -97,9 +96,17 @@ def deposits_by_database(database_name):
     j = jsonify(Deposits=jsonStr)
     return j
 
-@deposits.route('/deposits_by_district/<district_id>')
+@deposits.route('/deposits/deposits_by_district/<district_id>')
 def deposits_by_district(district_id):
     rows = Queries().deposits_by_district(district_id)
+    jsonStr = json.dumps(rows)
+    j = jsonify(Deposits=jsonStr)
+    return j
+
+@deposits.route('/deposits/deposits_by_county/<county_id>')
+def deposits_by_county(county_id):
+    print('In deposits by county', county_id)
+    rows = Queries().deposits_by_county(county_id)
     jsonStr = json.dumps(rows)
     j = jsonify(Deposits=jsonStr)
     return j

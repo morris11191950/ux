@@ -1,8 +1,6 @@
 from app import db
 from flask import session
 
-#usrDatabases = session['usrDatabases']
-
 class Queries():
 
     def __init__(self):
@@ -116,9 +114,12 @@ class Queries():
 ######################################################################
     def deposits_all(self):
 
-        usrDatabases = session['usrDatabases']
-        if usrDatabases is None:
+        try:
+            usrDatabases = session['usrDatabases']
+        except:
             usrDatabases = ['SJM']
+
+        session['usrDatabases'] = usrDatabases
 
         sql_parms = usrDatabases
         format_strings = ','.join(['%s'] * len(usrDatabases))
@@ -147,10 +148,12 @@ class Queries():
 ######################################################################
     def deposits_by_district(self, district_id):
 
-        usrDatabases = session['usrDatabases']
-        #print('1Model/deposits_by_district (usrDatabases) ', usrDatabases)
-        if usrDatabases is None:
+        try:
+            usrDatabases = session['usrDatabases']
+        except:
             usrDatabases = ['SJM']
+
+        session['usrDatabases'] = usrDatabases
 
         district_id_str = str(district_id)
         sql_parms = [district_id_str]
@@ -228,9 +231,12 @@ class Queries():
 ######################################################################
     def deposits_by_county(self, county_id, state_id):
         #print('type county_id ', type(county_id))
-        usrDatabases = session['usrDatabases']
-        if usrDatabases is None:
+        try:
+            usrDatabases = session['usrDatabases']
+        except:
             usrDatabases = ['SJM']
+
+        session['usrDatabases'] = usrDatabases
 
         county_id = str(county_id)
         state_id = str(state_id)
@@ -365,7 +371,7 @@ class Queries():
 # DEPOSITS - EDIT PAGE
 ######################################################################
     def deposits_edit(self, id):
-        #print('In model', id)
+        print('In model', id)
         json_deposits = []
         cursor = self.conn.cursor()
         sql = """SELECT d.deposit_id, d.deposit_name, d.deposit_aliases,
