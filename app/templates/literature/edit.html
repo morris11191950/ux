@@ -41,9 +41,9 @@
                          <option value="Start">--By District--</option>
      	          </select>
      	     </label><br>
-               <span id="list-districts">
-                    <ul id="districts_former" contenteditable="true"></ul>
-               </span>
+           <span id="list-districts">
+              <ul id="districts_former" contenteditable="true"></ul>
+           </span>
      	</div>
 
      	<div class="edit_selects">
@@ -93,7 +93,6 @@
 </div>
 
 <script>
-
 //*************************************************************
 //  CANCEL BUTTON FUNCTIONS
 //*************************************************************
@@ -101,26 +100,20 @@ function cancelFunction() {
     // window.location.href = 'http://127.0.0.1:5000/literature';
     location.reload(true);
 };
-
 function newFunction() {
      window.open('http://127.0.0.1:5000/literature/references_edit/0');
      };
-
-
 $(document).ready(function() {
-
 var $refid = $("#dummy").text();
 var category_ids = [];
 var district_ids = [];
 var special_ids = [];
-
 //*************************************************************
 //  SUBMIT BUTTON FUNCTIONS
 //*************************************************************
 $("#submit").click(function() {
      doAjax_submit();
 });
-
 //*************************************************************
 //  DELETE BUTTON FUNCTIONS
 //*************************************************************
@@ -129,7 +122,6 @@ $("#delete").click(function() {
     alert("Delete button currently inactive, consider setting verified radio button to 'no'")
      //doAjax_delete();
 });
-
 //*************************************************************
 //   DISTRICT SELECTION FROM DROPDOWN
 //*************************************************************
@@ -137,13 +129,10 @@ $("#districts_dropdown").change(function() {
      var selected_id = $(this).children("option:selected").val();
      var selected_district = $(this).children("option:selected").text();
      district_ids.push(selected_id)
-
      $temp = "<li>" + selected_district +
           "</span><span class='editDistrictDeleteButton'>    [Delete]</span></li>";
-
      $('#districts_former').append($temp);
 });
-
 //*************************************************************
 //   CATEGORY SELECTION FROM DROPDOWN
 //*************************************************************
@@ -151,13 +140,10 @@ $("#categories_dropdown").change(function() {
      var selected_id = $(this).children("option:selected").val();
      var selected_category = $(this).children("option:selected").text();
      category_ids.push(selected_id)
-
      $temp = "<li>" + selected_category +
           "</span><span class='editCategoryDeleteButton'>    [Delete]</span></li>";
-
      $('#categories_former').append($temp);
 });
-
 //*************************************************************
 //   SPECIAL COLLECTIONS SELECTION FROM DROPDOWN
 //*************************************************************
@@ -166,24 +152,20 @@ $("#specials_dropdown").change(function() {
      var selected_special = $(this).children("option:selected").text();
      special_ids.push(selected_id)
      console.log("In special - change ");
-
      $temp = "<li>" + selected_special +
           "</span><span class='editSpecialDeleteButton'>    [Delete]</span></li>";
-
      $('#specials_former').append($temp);
 });
-
 //*************************************************************
 //AJAX CALL TO LOAD MAIN FIELDS
 //*************************************************************
 //console.log("Load fields ", $refid);
      $.ajax({
         type: "GET",
-        url: "http://127.0.0.1:5000/edit/references_edit_load/" + $refid,
+        url: "http://127.0.0.1:5000/literature/edit/references_edit_load/" + $refid,
         success: function(data) {
             objects = JSON.parse(data.Load);
             $.each(objects, function(i, object) {
-
                  $('textarea[name=reference]').val(object.reference);
                  $('input[name=url]').val(object.url);
                  $('input[name=filename]').val(object.filename);
@@ -198,14 +180,12 @@ $("#specials_dropdown").change(function() {
             });
         }
     });
-
 //*************************************************************
 //AJAX CALL TO LOAD DISTRICTS TO DROPDOWN
 //*************************************************************
-
       $.ajax({
          type: "GET",
-         url: "http://127.0.0.1:5000/districts_all",
+         url: "http://127.0.0.1:5000/literature/districts_all",
          success: function(data) {
               objects = JSON.parse(data.Districts)
               $.each(objects, function(i, object) {
@@ -215,14 +195,12 @@ $("#specials_dropdown").change(function() {
               });
             }
         });
-
 //*************************************************************
 //AJAX CALL TO LOAD CATEGORIES TO DROPDOWN
 //*************************************************************
-
       $.ajax({
          type: "GET",
-         url: "http://127.0.0.1:5000/categories_all",
+         url: "http://127.0.0.1:5000/literature/categories_all",
          success: function(data) {
               objects = JSON.parse(data.Categories)
               $.each(objects, function(i, object) {
@@ -232,14 +210,12 @@ $("#specials_dropdown").change(function() {
               });
             }
         });
-
 //*************************************************************
 //AJAX CALL TO LOAD SPECIAL COLLECTIONS TO DROPDOWN
 //*************************************************************
-
       $.ajax({
           type: "GET",
-          url: "http://127.0.0.1:5000/specialCollections_all",
+          url: "http://127.0.0.1:5000/literature/specialCollections_all",
           success: function(data) {
               objects = JSON.parse(data.SpecialCollections)
               $.each(objects, function(i, object) {
@@ -249,14 +225,12 @@ $("#specials_dropdown").change(function() {
               });
             }
         });
-
 //*************************************************************
 //AJAX CALL TO LOAD DISTRICTS FOR SELECTED REFERENCE
 //*************************************************************
-
     $.ajax({
        type: "GET",
-       url: "http://127.0.0.1:5000/edit/references_edit_load_districts/" + $refid,
+       url: "http://127.0.0.1:5000/literature/edit/references_edit_load_districts/" + $refid,
        success: function(data) {
            objects = JSON.parse(data.Load);
            $.each(objects, function(i, object) {
@@ -266,7 +240,6 @@ $("#specials_dropdown").change(function() {
                 district_ids.push(district_id)
                 $('#districts_former').append($temp);
            });
-
            $(".editDistrictDeleteButton").click(function() {
                 var clickIndex = $(this).parent('li').index();
                 var x = $(this).parent('li');
@@ -275,69 +248,57 @@ $("#specials_dropdown").change(function() {
            });
        }
    });
-
 //*************************************************************
 //AJAX CALL TO LOAD CATEGORIES FOR SELECTED REFERENCE
 //*************************************************************
-
   $.ajax({
      type: "GET",
-     url: "http://127.0.0.1:5000/edit/references_edit_load_categories/" + $refid,
+     url: "http://127.0.0.1:5000/literature/edit/references_edit_load_categories/" + $refid,
      success: function(data) {
          objects = JSON.parse(data.Load);
          $.each(objects, function(i, object) {
-
               $temp = "<li>" + object.category_description +
                    "</span><span class='editCategoryDeleteButton'>    [Delete]</span></li>";
               var category_id = (object.category_id).toString()
               category_ids.push(category_id)
               $('#categories_former').append($temp);
          });
-
          $(".editCategoryDeleteButton").click(function() {
               var clickIndex = $(this).parent('li').index();
               var x = $(this).parent('li');
               category_ids.splice(clickIndex, 1)
               x.remove(x.clickIndex);
          });
-
      }
  });
-
  //*************************************************************
  //AJAX CALL TO LOAD SPECIALS FOR SELECTED REFERENCE
  //*************************************************************
-
    $.ajax({
       type: "GET",
-      url: "http://127.0.0.1:5000/edit/references_edit_load_specials/" + $refid,
+      url: "http://127.0.0.1:5000/literature/edit/references_edit_load_specials/" + $refid,
       success: function(data) {
           objects = JSON.parse(data.Load);
           $.each(objects, function(i, object) {
-
                $temp = "<li>" + object.special_description +
                     "</span><span class='editSpecialDeleteButton'>    [Delete]</span></li>";
                var special_id = (object.special_id).toString()
                special_ids.push(special_id)
                $('#specials_former').append($temp);
           });
-
           $(".editSpecialDeleteButton").click(function() {
                var clickIndex = $(this).parent('li').index();
                var x = $(this).parent('li');
                special_ids.splice(clickIndex, 1)
                x.remove(x.clickIndex);
           });
-
       }
   });
-
   //*************************************************************
   // SAVE THE EDITS
   //*************************************************************
   var doAjax_submit = function() {
        var data = {};
-
        data['refid'] = $refid;
        data['reference'] = $("textarea[name='reference']").val();
        data['filename'] = $("input[name='filename']").val();
@@ -347,20 +308,17 @@ $("#specials_dropdown").change(function() {
        data['district_ids'] = district_ids;
        data['category_ids'] = category_ids;
        data['special_ids'] = special_ids;
-
        if (data['yn'] == undefined) {
             data['yn'] = 'no';
        }
-
        console.log("data ", data)
-
        if ($refid == 0) {
             //console.log("doAjax_submit, refid is 0 ", $refid);
             //data['yn'] = 'no';
             $.ajax({
               type: "POST",
               contentType: 'application/json;charset=UTF-8',
-              url: "http://127.0.0.1:5000/edit/references_new",
+              url: "http://127.0.0.1:5000/literature/edit/references_new",
               data: JSON.stringify(data),
               success: function(refid_new) {
                    $refid = refid_new;
@@ -372,7 +330,7 @@ $("#specials_dropdown").change(function() {
             $.ajax({
               type: "POST",
               contentType: 'application/json;charset=UTF-8',
-              url: "http://127.0.0.1:5000/edit/references_edit_submit",
+              url: "http://127.0.0.1:5000/literature/edit/references_edit_submit",
               data: JSON.stringify(data),
               success: function() {
                    //Add the following alert in final
@@ -381,20 +339,17 @@ $("#specials_dropdown").change(function() {
               });
          };
        };
-
 //*************************************************************
 // DELETE THE CURRENT REFERENCE
 //*************************************************************
       var doAjax_delete = function() {
-
            var data = {};
            data['refid'] = $refid;
-
            //console.log("doAjax_delete, refid ", $refid)
            $.ajax({
              type: "POST",
              contentType: 'application/json;charset=UTF-8',
-             url: "http://127.0.0.1:5000/edit/references_delete",
+             url: "http://127.0.0.1:5000/literature/edit/references_delete",
              data: JSON.stringify(data),
              success: function() {
                   //Add the following alert in final
@@ -403,10 +358,7 @@ $("#specials_dropdown").change(function() {
                   }
              });
       };
-
-
   });
-
   </script>
 
 {% endblock %}

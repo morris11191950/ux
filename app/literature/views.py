@@ -2,32 +2,52 @@ from flask import render_template, jsonify, json, request, redirect, url_for
 from . import literature
 from ..models import Queries
 
-@literature.route('/categories_all')
+@literature.route('/literature/databases_all')
+def databases_all():
+    rows = Queries().databases_all()
+    jsonStr = json.dumps(rows)
+    j = jsonify(Databases=jsonStr)
+    return j
+
+@literature.route('/literature/categories_all')
 def categories_all():
     rows = Queries().categories_all()
     jsonStr = json.dumps(rows)
     j = jsonify(Categories=jsonStr)
     return j
 
-@literature.route('/specialCollections_all')
+@literature.route('/literature/specialCollections_all')
 def specialCollections_all():
     #print('I made it to special collections')
     rows = Queries().specialCollections_all()
     jsonStr = json.dumps(rows)
-    #print('Lit View: Special Collections(rows): ', type(rows))
-    #print('Lit View: Special Collections(jsonStr) ', type(jsonStr))
     j = jsonify(SpecialCollections=jsonStr)
-    #print('Lit View: Special Collections(j) ', type(j))
     return j
 
-@literature.route('/districts_all')
+@literature.route('/literature/districts_all')
 def districts_all():
     rows = Queries().districts_all()
     jsonStr = json.dumps(rows)
     j = jsonify(Districts=jsonStr)
     return j
 
-@literature.route('/counties_all')
+@literature.route('/literature/countries_all')
+def countries_all():
+    rows = Queries().countries_all()
+    jsonStr = json.dumps(rows)
+    #print('countries rows ', rows)
+    j = jsonify(Countries=jsonStr)
+    return j
+
+@literature.route('/literature/states_all')
+def states_all():
+    rows = Queries().states_all()
+    jsonStr = json.dumps(rows)
+    #print('states rows ', rows)
+    j = jsonify(States=jsonStr)
+    return j
+
+@literature.route('/literature/counties_all')
 def counties_all():
     rows = Queries().counties_all()
     jsonStr = json.dumps(rows)
@@ -35,7 +55,7 @@ def counties_all():
     j = jsonify(Counties=jsonStr)
     return j
 
-@literature.route('/deposits_all')
+@literature.route('/literature/deposits_all')
 def deposits_all():
     rows = Queries().deposits_all()
     jsonStr = json.dumps(rows)
@@ -43,7 +63,7 @@ def deposits_all():
     j = jsonify(Deposits=jsonStr)
     return j
 
-@literature.route('/references_all')
+@literature.route('/literature/references_all')
 def references_all():
     rows = Queries().references_all()
     jsonStr = json.dumps(rows)
@@ -51,14 +71,14 @@ def references_all():
     j = jsonify(Refs=jsonStr)
     return j
 
-@literature.route('/references_by_category/<int:category_id>')
+@literature.route('/literature/references_by_category/<int:category_id>')
 def references_by_category(category_id):
     rows = Queries().references_by_category(category_id)
     jsonStr = json.dumps(rows)
     j = jsonify(Refs=jsonStr)
     return j
 
-@literature.route('/references_by_specialCollection/<int:spcol_id>')
+@literature.route('/literature/references_by_specialCollection/<int:spcol_id>')
 def references_by_specialCollection(spcol_id):
     #print('Views:references_by_specialCollection spcol_id', spcol_id)
     rows = Queries().references_by_specialCollection(spcol_id)
@@ -66,7 +86,7 @@ def references_by_specialCollection(spcol_id):
     j = jsonify(Refs=jsonStr)
     return j
 
-@literature.route('/references_by_district/<int:district_id>')
+@literature.route('/literature/references_by_district/<int:district_id>')
 def references_by_district(district_id):
     rows = Queries().references_by_district(district_id)
     jsonStr = json.dumps(rows)
@@ -78,14 +98,14 @@ def references_edit(refid):
     #print('refid ', refid)
     return render_template('literature/edit.html', refid=refid)
 
-@literature.route('/references_search/<id>')
+@literature.route('/literature/references_search/<id>')
 def references_search(id):
     rows = Queries().references_search(id)
     jsonStr = json.dumps(rows)
     j = jsonify(Refs=jsonStr)
     return j
 
-@literature.route('/edit/references_edit_load/<refid>')
+@literature.route('/literature/edit/references_edit_load/<refid>')
 def references_edit_load(refid):
     #Query to get the inputs from referenc table
     rows = Queries().references_edit(refid)
@@ -93,7 +113,7 @@ def references_edit_load(refid):
     j = jsonify(Load=jsonStr)
     return j
 
-@literature.route('/edit/references_edit_load_districts/<refid>')
+@literature.route('/literature/edit/references_edit_load_districts/<refid>')
 def references_edit_load_districts(refid):
     #Query to get the inputs from referenc table
     rows = Queries().districts_by_reference(refid)
@@ -101,7 +121,7 @@ def references_edit_load_districts(refid):
     j = jsonify(Load=jsonStr)
     return j
 
-@literature.route('/edit/references_edit_load_categories/<refid>')
+@literature.route('/literature/edit/references_edit_load_categories/<refid>')
 def references_edit_load_categories(refid):
     #Query to get the inputs from referenc table
     rows = Queries().categories_by_reference(refid)
@@ -109,7 +129,7 @@ def references_edit_load_categories(refid):
     j = jsonify(Load=jsonStr)
     return j
 
-@literature.route('/edit/references_edit_load_specials/<refid>')
+@literature.route('/literature/edit/references_edit_load_specials/<refid>')
 def references_edit_load_specials(refid):
     #Query to get the inputs from referenc table
     rows = Queries().specialCollections_by_reference(refid)
@@ -117,7 +137,7 @@ def references_edit_load_specials(refid):
     j = jsonify(Load=jsonStr)
     return j
 
-@literature.route('/edit/references_new', methods=['POST'])
+@literature.route('/literature/edit/references_new', methods=['POST'])
 def references_new():
 
     refid = request.json['refid']
@@ -144,7 +164,7 @@ def references_new():
     #print("refid_new ", refid_new)
     return refid_new
 
-@literature.route('/edit/references_delete', methods=['POST'])
+@literature.route('/literature/edit/references_delete', methods=['POST'])
 def references_delete():
 
     refid = request.json['refid']
@@ -155,7 +175,7 @@ def references_delete():
 
     return '0'
 
-@literature.route('/edit/references_edit_submit', methods=['POST'])
+@literature.route('/literature/edit/references_edit_submit', methods=['POST'])
 def references_edit_submit():
 
     refid = request.json['refid']
@@ -182,7 +202,7 @@ def references_edit_submit():
     Queries().references_edit_submit_specials(refid, special_ids)
     return '0'
 
-@literature.route('/url_pdf/<id>')
+@literature.route('/literature/url_pdf/<id>')
 def url_pdf(id):
     row = Queries().url_pdf(id)
     jsonStr = json.dumps(row)

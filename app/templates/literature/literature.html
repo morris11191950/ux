@@ -188,7 +188,7 @@ var doAjax_districts = function() {
 
      $.ajax({
         type: "GET",
-        url: "http://127.0.0.1:5000/districts_all",
+        url: "http://127.0.0.1:5000/literature/districts_all",
         success: function(data) {
              objects = JSON.parse(data.Districts)
              $.each(objects, function(i, object) {
@@ -209,7 +209,7 @@ var doAjax_districts = function() {
 
       $.ajax({
          type: "GET",
-         url: "http://127.0.0.1:5000/categories_all",
+         url: "http://127.0.0.1:5000/literature/categories_all",
          success: function(data) {
               objects = JSON.parse(data.Categories)
               $.each(objects, function(i, object) {
@@ -230,7 +230,7 @@ var doAjax_districts = function() {
 
        $.ajax({
           type: "GET",
-          url: "http://127.0.0.1:5000/specialCollections_all",
+          url: "http://127.0.0.1:5000/literature/specialCollections_all",
           success: function(data) {
                objects = JSON.parse(data.SpecialCollections)
                $.each(objects, function(i, object) {
@@ -256,7 +256,7 @@ var doAjax_districts = function() {
 
        $.ajax({
           type: "GET",
-          url: "http://127.0.0.1:5000/references_search/" + usrFrag,
+          url: "http://127.0.0.1:5000/literature/references_search/" + usrFrag,
           success: function(data) {
                $('#references_selected_display').empty();
                objects = JSON.parse(data.Refs)
@@ -318,7 +318,7 @@ var doAjax_districts = function() {
 
       $.ajax({
          type: "GET",
-         url: "http://127.0.0.1:5000/references_by_district/" + inputValue,
+         url: "http://127.0.0.1:5000/literature/references_by_district/" + inputValue,
          success: function(data) {
               $('#references_selected_display').empty();
               objects = JSON.parse(data.Refs)
@@ -380,7 +380,7 @@ var doAjax_districts = function() {
 
       $.ajax({
          type: "GET",
-         url: "http://127.0.0.1:5000/references_by_category/" + inputValue,
+         url: "http://127.0.0.1:5000/literature/references_by_category/" + inputValue,
          success: function(data) {
               $('#references_selected_display').empty();
               objects = JSON.parse(data.Refs)
@@ -441,7 +441,7 @@ var doAjax_districts = function() {
 
        $.ajax({
           type: "GET",
-          url: "http://127.0.0.1:5000/references_by_specialCollection/" + inputValue,
+          url: "http://127.0.0.1:5000/literature/references_by_specialCollection/" + inputValue,
           success: function(data) {
                $('#references_selected_display').empty();
                objects = JSON.parse(data.Refs)
@@ -504,7 +504,7 @@ var doAjax_references_all = function() {
 
      $.ajax({
         type: "GET",
-        url: "http://127.0.0.1:5000/references_all",
+        url: "http://127.0.0.1:5000/literature/references_all",
         success: function(data) {
              objects = JSON.parse(data.Refs);
              $.each(objects, function(i, object) {
@@ -562,7 +562,7 @@ var doAjax_references_all = function() {
 
       $.ajax({
          type: "GET",
-         url: "http://127.0.0.1:5000/url_pdf/" + id_ref,
+         url: "http://127.0.0.1:5000/literature/url_pdf/" + id_ref,
          success: function(data) {
              // $('#references_selected_display').empty();
               object = JSON.parse(data.Url)

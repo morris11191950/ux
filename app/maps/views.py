@@ -3,7 +3,7 @@ from flask import render_template, jsonify, json, request, current_app
 from ..models import Queries
 from . import maps
 
-@maps.route('/deposits_by_district/<int:district_id>')
+@maps.route('/maps/deposits_by_district/<int:district_id>')
 def deposits_by_district(district_id):
     rows = Queries().deposits_by_district(district_id)
     jsonStr = json.dumps(rows)
@@ -11,7 +11,7 @@ def deposits_by_district(district_id):
     #print('maps views: j ', j, type(j))
     return j
 
-@maps.route('/deposits_by_county/<int:county_id>/<int:state_id>')
+@maps.route('/maps/deposits_by_county/<int:county_id>/<int:state_id>')
 def deposits_by_county(county_id, state_id):
     rows = Queries().deposits_by_county(county_id, state_id)
     jsonStr = json.dumps(rows)
@@ -19,7 +19,7 @@ def deposits_by_county(county_id, state_id):
     #print('j in views ', rows)
     return j
 
-@maps.route('/deposits_by_deposit/<string:selected_id_str>')
+@maps.route('/maps/deposits_by_deposit/<string:selected_id_str>')
 def deposits_by_deposit(selected_id_str):
     #print('selected_id_str views ', selected_id_str)
     rows = Queries().deposits_by_deposit(selected_id_str)

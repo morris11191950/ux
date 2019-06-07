@@ -12,139 +12,145 @@
 
 <p hidden id="dummy" >{{deposit_id}}</p>
 
-<div class="form">
-     <div class="form-heading">Make Edits</div>
+<div class="editDepositPage">
+     <div class="heading">Make Edits</div>
      <p>Deposit Id = {{deposit_id}}</p>
-     <form action="" name="depositEditForm" method="post">
-          <label>
-               <span>Deposit Name</span>
-               <input name="deposit_name" type="text" class="smaller-field"/>
-          </label>
-          <label>
-               <span>Aliases </span>
-               <input name="aliases" type="text" class="smaller-field"/>
-          </label>
-          <label>
-               <span>Latitude</span>
-               <input name="latitude" type="text" class="smaller-field"/>
-          </label>
-          <label>
-               <span>Longitude</span>
-               <input name="longitude" id="ur" type="text" class="smaller-field"/>
-          </label>
-          <label>
-              <span>Database Name</span>
-              <input name="database_name" id="ur" type="text" class="smaller-field"/>
-          </label>
-          <label>
-               <span>Country</span>
-               <input name="country" id="ur" type="text" class="smaller-field"/>
-          </label>
-          <label>
-               <span>State</span>
-               <input name="state" id="ur" type="text" class="smaller-field"/>
-          </label>
-          <label>
-               <span>County</span>
-               <input name="county" id="ur" type="text" class="smaller-field"/>
-          </label>
-          <label>
-               <span>Geologic Unit</span>
-               <input name="geologic_unit" id="ur" type="text" class="smaller-field"/>
-          </label>
-          <label>
-               <span>Ore Type</span>
-               <input name="ore_type" id="ur" type="text" class="smaller-field"/>
-          </label>
-          <label>
-               <span>Mine Type</span>
-               <input name="mine_type" id="ur" type="text" class="smaller-field"/>
-          </label>
-          <label>
-               <span>Discovery Year</span>
-               <input name="discovery_year" id="ur" type="text" class="smaller-field"/>
-          </label>
-          <label>
-               <span>Commodities</span>
-               <input name="commodities" id="ur" type="text" class="smaller-field"/>
-          </label>
-          <label>
-               <span>Production (lbs U3O8)</span>
-               <input name="production" id="ur" type="text" class="smaller-field"/>
-          </label>
-          <label>
-               <span>Grade (% U3O8)</span>
-               <input name="grade" id="ur" type="text" class="smaller-field"/>
-          </label>
-          <label>
-               <span>Reference Ids</span>
-               <input name="ref_ids" id="ur" type="text" class="smaller-field"/>
-          </label>
+  <form  action="" name="depositEditForm" method="post">
+      <div class="row_div">Deposit Name
+           <input name="deposit_name" type="text" class="row_input"/>
+      </div>
+      <div class="row_div">Aliases
+           <input name="aliases" type="text" class="row_input"/>
+      </div>
+      <div class="row_div">Latitude
+           <input name="latitude" type="text" class="row_input"/>
+      </div>
+      <div class="row_div">Longitude
+           <input name="longitude" type="text" class="row_input"/>
+      </div>
+      <div class="row_div">Database Name
+           <input name="database_name" type="text" class="row_input"/>
+      </div>
+      <div class="row_div">Geologic Unit
+           <input name="geologic_unit" type="text" class="row_input"/>
+      </div>
+      <div class="row_div">Ore Type
+           <input name="ore_type" type="text" class="row_input"/>
+      </div>
+      <div class="row_div">Mine Type
+           <input name="mine_type" type="text" class="row_input"/>
+      </div>
+      <div class="row_div">Discovery Year
+           <input name="discovery_year" type="text" class="row_input"/>
+      </div>
+      <div class="row_div">Commodities
+           <input name="commodities" type="text" class="row_input"/>
+      </div>
+      <div class="row_div">Production (lbs U3O8)
+           <input name="production" type="text" class="row_input"/>
+      </div>
+      <div class="row_div">Grade (%U3O8)
+           <input name="grade" type="text" class="row_input"/>
+      </div>
+      <div class="row_div">Reference Ids
+           <input name="ref_ids" type="text" class="row_input"/>
+      </div>
 
-     	<div class="edit_selects">
-     		<label>
-     			<span>Districts</span>
-     	          <select name="districts_dropdown"
-                         id="districts_dropdown" class="select-dropdown">
-                         <option value="Start">--By District--</option>
-     	          </select>
-     	     </label><br>
-               <span id="list-districts">
-                    <ul id="districts_former" contenteditable="true"></ul>
-               </span>
-     	</div>
+  <div class="bigRow">
+    <div class="listClass">
+      <ol id="districts_former"></ol>
+    </div>
+    <p style="margin:0">Districts</p>
+      <select id="districts_dropdown" style="width:135px;">
+        <option value="Start">--District--</option>
+      </select>
+  </div><br>
 
-     </form>
+  <div class="bigRow">
+    <div class="listClass">
+      <ul name="country" id="countries_former"></ul>
+    </div>
+    <p style="margin:0">Countries</p>
+      <select id="countries_dropdown" style="width:135px;">
+        <option value="Start">--Country--</option>
+      </select>
+  </div><br>
 
-     	<div class="edit_buttons">
-     		<button id="submit">Save</button>
-     		<button onclick="cancelFunction()">Cancel</button>
-     		<button onclick="newFunction()">New Reference</button>
-     		<button  type="button" id="delete">Delete Deposit</button>
-     	</div>
+  <div class="bigRow">
+    <div class="listClass">
+      <ul id="states_former"></ul>
+    </div>
+    <p style="margin:0">States</p>
+      <select id="states_dropdown" style="width:135px;">
+        <option value="Start">--State--</option>
+      </select>
+  </div><br>
+
+  <div class="bigRow">
+    <div class="listClass">
+      <ul id="counties_former"></ul>
+    </div>
+    <p style="margin:0">County</p>
+      <select id="counties_dropdown" style="width:135px;">
+        <option value="Start">--County--</option>
+      </select>
+  </div><br>
+
+  </form>
+
+  <div class="buttons">
+     <button type="button" id="submit">Save</button>
+     <button type="button" onclick="cancelFunction()">Cancel</button>
+     <button type="button" id="newSJMdeposit">New SJM Deposit</button>
+     <button type="button" id="delete">Delete Deposit</button>
+   </div>
 
 </div>
 
 <script>
-
 //*************************************************************
 //  CANCEL BUTTON FUNCTIONS
 //*************************************************************
 function cancelFunction() {
     location.reload(true);
 };
-
 function newFunction() {
      window.open('http://127.0.0.1:5000/deposits/deposits_edit/0');
      };
-
-
 $(document).ready(function() {
-
 var $deposit_id = $("#dummy").text();
 var district_ids = [];
-
+var country_id = 0;
+var state_id = 0;
+var county_id = 0;
 //*************************************************************
 //  SUBMIT BUTTON FUNCTIONS
 //*************************************************************
 $("#submit").click(function() {
      doAjax_submit();
 });
-
 //*************************************************************
 //  NEW SJM DEPOSIT BUTTON
 //*************************************************************
-// $("#new").click(function() {
-//     console.log("New Deposit");
-//      //doAjax_new();
-// });
+$("#newSJMdeposit").click(function() {
+    //console.log("New SJM Deposit");
+    doAjax_newSJMdeposit();
+});
 
 //*************************************************************
 //  DELETE BUTTON FUNCTIONS
 //*************************************************************
 $("#delete").click(function() {
-    console.log("About to delete");
-    alert("Delete button currently inactive")
+    //console.log("About to delete");
+    tf = confirm("Are you sure you want to permanently delete this deposit?")
+    if(tf) {
+      console.log("Deletion starting");
+      doAjax_delete();
+    } else {
+      console.log("Terminating");
+    }
+    //alert("Delete button currently inactive")
+    //doAjax_delete();
 });
 
 //*************************************************************
@@ -154,11 +160,36 @@ $("#districts_dropdown").change(function() {
      var selected_id = $(this).children("option:selected").val();
      var selected_district = $(this).children("option:selected").text();
      district_ids.push(selected_id)
-
      $temp = "<li>" + selected_district +
-          "</span><span class='editDistrictDeleteButton'>    [Delete]</span></li>";
-
+          "</span><span class='editDepositsDeleteButton'>    [Delete]</span></li>";
      $('#districts_former').append($temp);
+});
+
+//*************************************************************
+//   COUNTRY SELECTION FROM DROPDOWN
+//*************************************************************
+$("#countries_dropdown").change(function() {
+     country_id = $(this).children("option:selected").val();
+     country = $(this).children("option:selected").text();
+     document.getElementById("countries_former").innerHTML = country;
+});
+
+//*************************************************************
+//   STATE SELECTION FROM DROPDOWN
+//*************************************************************
+$("#states_dropdown").change(function() {
+     state_id = $(this).children("option:selected").val();
+     state = $(this).children("option:selected").text();
+     document.getElementById("states_former").innerHTML = state;
+});
+
+//*************************************************************
+//   COUNTY SELECTION FROM DROPDOWN
+//*************************************************************
+$("#counties_dropdown").change(function() {
+     county_id = $(this).children("option:selected").val();
+     county = $(this).children("option:selected").text();
+     document.getElementById("counties_former").innerHTML = county;
 });
 
 //*************************************************************
@@ -167,8 +198,9 @@ $("#districts_dropdown").change(function() {
 //console.log("Load fields ", $deposit_id);
      $.ajax({
         type: "GET",
-        url: "http://127.0.0.1:5000/edit/deposits_edit_load/" + $deposit_id,
+        url: "http://127.0.0.1:5000/deposits/edit/deposits_edit_load/" + $deposit_id,
         success: function(data) {
+          //console.log("doAjax_load_main, data ", data);
             objects = JSON.parse(data.Load);
             $.each(objects, function(i, object) {
                  $('input[name=deposit_name]').val(object.deposit_name);
@@ -181,22 +213,25 @@ $("#districts_dropdown").change(function() {
                  $('input[name=geologic_unit]').val(object.geologic_unit);
                  $('input[name=ore_type]').val(object.ore_type);
                  $('input[name=discovery_year]').val(object.discovery_year);
-                 $('input[name=country]').val(object.country);
-                 $('input[name=state]').val(object.state);
-                 $('input[name=county]').val(object.county);
                  $('input[name=ref_ids]').val(object.ref_ids);
                  $('input[name=mine_type]').val(object.mine_type);
                  $('input[name=commodities]').val(object.commodities);
+
+                 document.getElementById("countries_former").innerHTML = object.country;
+                 document.getElementById("states_former").innerHTML = object.state;
+                 document.getElementById("counties_former").innerHTML = object.county;
+                 country_id = object.country_id
+                 state_id = object.state_id
+                 county_id = object.county_id
             });
         }
     });
-
 //*************************************************************
 //AJAX CALL TO LOAD DISTRICTS TO DROPDOWN
 //*************************************************************
       $.ajax({
          type: "GET",
-         url: "http://127.0.0.1:5000/districts_all",
+         url: "http://127.0.0.1:5000/literature/districts_all",
          success: function(data) {
               objects = JSON.parse(data.Districts)
               $.each(objects, function(i, object) {
@@ -208,23 +243,69 @@ $("#districts_dropdown").change(function() {
         });
 
 //*************************************************************
+//AJAX CALL TO LOAD COUNTRIES TO DROPDOWN
+//*************************************************************
+      $.ajax({
+         type: "GET",
+         url: "http://127.0.0.1:5000/literature/countries_all",
+         success: function(data) {
+              objects = JSON.parse(data.Countries)
+              $.each(objects, function(i, object) {
+                   $temp = "<option " + "value="  + object.country_id + ">"
+                        + object.country + '</option>'
+                   $('#countries_dropdown').append($temp);
+              });
+            }
+        });
+
+//*************************************************************
+//AJAX CALL TO LOAD STATES TO DROPDOWN
+//*************************************************************
+      $.ajax({
+         type: "GET",
+         url: "http://127.0.0.1:5000/literature/states_all",
+         success: function(data) {
+              objects = JSON.parse(data.States)
+              $.each(objects, function(i, object) {
+                   $temp = "<option " + "value="  + object.state_id + ">"
+                        + object.state + '</option>'
+                   $('#states_dropdown').append($temp);
+              });
+            }
+        });
+
+//*************************************************************
+//AJAX CALL TO LOAD COUNTIES TO DROPDOWN
+//*************************************************************
+      $.ajax({
+         type: "GET",
+         url: "http://127.0.0.1:5000/literature/counties_all",
+         success: function(data) {
+              objects = JSON.parse(data.Counties)
+              $.each(objects, function(i, object) {
+                   $temp = "<option " + "value="  + object.county_id + ">"
+                        + object.state + ": " + object.county + '</option>'
+                   $('#counties_dropdown').append($temp);
+              });
+            }
+        });
+
+//*************************************************************
 //AJAX CALL TO LOAD DISTRICTS FOR SELECTED DEPOSIT
 //*************************************************************
-
     $.ajax({
        type: "GET",
-       url: "http://127.0.0.1:5000/edit/deposits_edit_load_districts/" + $deposit_id,
+       url: "http://127.0.0.1:5000/deposits/edit/deposits_edit_load_districts/" + $deposit_id,
        success: function(data) {
            objects = JSON.parse(data.Load);
            $.each(objects, function(i, object) {
                 $temp = "<li>" + object.district_name +
-                     "</span><span class='editDistrictDeleteButton'>    [Delete]</span></li>";
+                     "</span><span class='editDepositsDeleteButton'>    [Delete]</span></li>";
                 var district_id = (object.district_id).toString()
                 district_ids.push(district_id)
                 $('#districts_former').append($temp);
            });
-
-           $(".editDistrictDeleteButton").click(function() {
+           $(".editDepositsDeleteButton").click(function() {
                 var clickIndex = $(this).parent('li').index();
                 var x = $(this).parent('li');
                 district_ids.splice(clickIndex, 1)
@@ -233,13 +314,59 @@ $("#districts_dropdown").change(function() {
        }
    });
 
+  //*************************************************************
+  // NEW SJMdeposit
+  //*************************************************************
+   var doAjax_newSJMdeposit = function() {
+     //console.log("doAjax, New SJM Deposit");
+     var data = {};
+     //data['deposit_id'] = $deposit_id;
+     data['deposit_name'] = $("input[name='deposit_name']").val();
+     data['aliases'] = $("input[name='aliases']").val();
+     data['latitude'] = $("input[name='latitude']").val();
+     data['longitude'] = $("input[name='longitude']").val();
+     //data['database_name'] = $("input[name='database_name']").val();
+     data['database_name'] = 'sjm'
+     data['production'] = $("input[name='production']").val();
+     data['grade'] = $("input[name='grade']").val();
+     data['geologic_unit'] = $("input[name='geologic_unit']").val();
+     data['ore_type'] = $("input[name='ore_type']").val();
+     data['discovery_year'] = $("input[name='discovery_year']").val();
+     data['ref_ids'] = $("input[name='ref_ids']").val();
+     data['mine_type'] = $("input[name='mine_type']").val();
+     data['commodities'] = $("input[name='commodities']").val();
+
+     data['district_ids'] = district_ids;
+     data['country_id'] = country_id;
+     data['state_id'] = state_id;
+     data['county_id'] = county_id;
+     //console.log("Submit data ", data)
+
+     $.ajax({
+       type: "POST",
+       contentType: 'application/json;charset=UTF-8',
+       url: "http://127.0.0.1:5000/deposits/edit/deposit_SJM_new",
+       data: JSON.stringify(data),
+       success: function(data) {
+            console.log("sjmDeposit data ", data)
+            objects = JSON.parse(data.myData)
+            id = objects.new_id
+            console.log("sjmDeposit id ", id)
+            //$deposit_id = deposit_id_new;
+            alert("New deposit was created")
+            theUrl = 'http://127.0.0.1:5000/deposits/deposits_edit/' + id
+            window.open(theUrl, '_self');
+            //location.reload(true);
+            }
+       });
+
+   }
 
   //*************************************************************
   // SAVE THE EDITS
   //*************************************************************
   var doAjax_submit = function() {
        var data = {};
-
        data['deposit_id'] = $deposit_id;
        data['deposit_name'] = $("input[name='deposit_name']").val();
        data['aliases'] = $("input[name='aliases']").val();
@@ -251,36 +378,19 @@ $("#districts_dropdown").change(function() {
        data['geologic_unit'] = $("input[name='geologic_unit']").val();
        data['ore_type'] = $("input[name='ore_type']").val();
        data['discovery_year'] = $("input[name='discovery_year']").val();
-       data['country'] = $("input[name='country']").val();
-       data['state'] = $("input[name='state']").val();
-       data['county'] = $("input[name='county']").val();
        data['ref_ids'] = $("input[name='ref_ids']").val();
        data['mine_type'] = $("input[name='mine_type']").val();
        data['commodities'] = $("input[name='commodities']").val();
 
        data['district_ids'] = district_ids;
-
-       //console.log("data ", data)
-
-       if ($deposit_id == 0) {
-            //console.log("doAjax_submit, refid is 0 ", $refid);
-            //data['yn'] = 'no';
-            $.ajax({
-              type: "POST",
-              contentType: 'application/json;charset=UTF-8',
-              url: "http://127.0.0.1:5000/edit/deposits_new",
-              data: JSON.stringify(data),
-              success: function(deposit_id_new) {
-                   $deposit_id = deposit_id_new;
-                   alert("New reference was successful")
-                   }
-              });
-            } else {
+       data['country_id'] = country_id;
+       data['state_id'] = state_id;
+       data['county_id'] = county_id;
             //console.log("doAjax_submit, refid is NOT 0 ", $refid)
             $.ajax({
               type: "POST",
               contentType: 'application/json;charset=UTF-8',
-              url: "http://127.0.0.1:5000/edit/deposits_edit_submit",
+              url: "http://127.0.0.1:5000/deposits/edit/deposits_edit_submit",
               data: JSON.stringify(data),
               success: function() {
                    //Add the following alert in final
@@ -288,21 +398,19 @@ $("#districts_dropdown").change(function() {
                    }
               });
          };
-       };
+       //};
 
 //*************************************************************
 // DELETE THE CURRENT DEPOSIT
 //*************************************************************
       var doAjax_delete = function() {
-
            var data = {};
            data['deposit_id'] = $deposit_id;
-
-           //console.log("doAjax_delete, refid ", $refid)
+           console.log("doAjax_delete, deposit_id ", $deposit_id)
            $.ajax({
              type: "POST",
              contentType: 'application/json;charset=UTF-8',
-             url: "http://127.0.0.1:5000/edit/deposits_delete",
+             url: "http://127.0.0.1:5000/deposits/edit/deposits_delete",
              data: JSON.stringify(data),
              success: function() {
                   //Add the following alert in final
@@ -311,10 +419,7 @@ $("#districts_dropdown").change(function() {
                   }
              });
       };
-
-
   });
-
   </script>
 
 {% endblock %}

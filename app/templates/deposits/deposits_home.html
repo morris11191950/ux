@@ -141,7 +141,7 @@ $("#button_counties").change(function() {
 var doAjax_databases = function() {
      $.ajax({
         type: "GET",
-        url: "http://127.0.0.1:5000/databases_all",
+        url: "http://127.0.0.1:5000/literature/databases_all",
         success: function(data) {
              objects = JSON.parse(data.Databases)
              $.each(objects, function(i, object) {
@@ -159,7 +159,7 @@ var doAjax_databases = function() {
  var doAjax_districts = function() {
       $.ajax({
          type: "GET",
-         url: "http://127.0.0.1:5000/districts_all",
+         url: "http://127.0.0.1:5000/literature/districts_all",
          success: function(data) {
               objects = JSON.parse(data.Districts)
               $.each(objects, function(i, object) {
@@ -177,7 +177,7 @@ var doAjax_databases = function() {
    var doAjax_counties = function() {
    $.ajax({
       type: "GET",
-      url: "http://127.0.0.1:5000/counties_all",
+      url: "http://127.0.0.1:5000/literature/counties_all",
       success: function(data) {
            objects = JSON.parse(data.Counties)
            $.each(objects, function(i, object) {
@@ -200,7 +200,7 @@ var doAjax_databases = function() {
       $("#wait").show();
       $.ajax({
          type: "GET",
-         url: "http://127.0.0.1:5000/deposits_by_database/" + inputValue,
+         url: "http://127.0.0.1:5000/deposits/deposits_by_database/" + inputValue,
          success: function(data) {
               //console.log('Success');
               $('#deposits_selected_display').empty()
@@ -275,7 +275,7 @@ var doAjax_databases = function() {
         $("#wait").show();
         $.ajax({
            type: "GET",
-           url: "http://127.0.0.1:5000/deposits_by_county/" + county_id + "/" + state_id,
+           url: "http://127.0.0.1:5000/maps/deposits_by_county/" + county_id + "/" + state_id,
            success: function(data) {
                 //console.log('success');
                 $('#deposits_selected_display').empty()
@@ -311,7 +311,7 @@ var doAjax_databases = function() {
         $("#wait").show();
         $.ajax({
            type: "GET",
-           url: "http://127.0.0.1:5000/deposits_search/" + usrFrag,
+           url: "http://127.0.0.1:5000/deposits/deposits_search/" + usrFrag,
            success: function(data) {
                 $('#references_selected_display').empty();
                 objects = JSON.parse(data.Deposits)
