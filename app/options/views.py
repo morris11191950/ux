@@ -20,7 +20,7 @@ def options_home():
         session['usrDatabases'] = usrDatabases
 
         options = {"usrDatabases": usrDatabases, "usrMapLabels_yn" : usrMapLabels_yn}
-        #print('options_home GET options: ', options, type(options))
+        print('options_home GET options: ', options, type(options))
 
         return jsonify(options)
 

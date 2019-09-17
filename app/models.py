@@ -101,7 +101,6 @@ class Queries():
         cursor.execute(sql)
         self.conn.close()
         rows = cursor.fetchall()
-        #print('County rows ', rows)
         #Convert to JSON format
         for row in rows:
             json_county = {'county_id': row[0], 'county': row[1], 'state_id':row[2], 'state':row[3]}
@@ -121,7 +120,6 @@ class Queries():
         cursor.execute(sql)
         self.conn.close()
         rows = cursor.fetchall()
-        #print('County rows ', rows)
         #Convert to JSON format
         for row in rows:
             json_state = {'state_id': row[0], 'state': row[1]}
@@ -141,7 +139,6 @@ class Queries():
         cursor.execute(sql)
         self.conn.close()
         rows = cursor.fetchall()
-        #print('County rows ', rows)
         #Convert to JSON format
         for row in rows:
             json_country = {'country_id': row[0], 'country': row[1]}
@@ -170,12 +167,34 @@ class Queries():
         sql = """SELECT deposit_id, deposit_name
         FROM deposit
         WHERE database_name IN ({db_list})
-        ORDER BY deposit_name LIMIT 1000""".format(db_list=format_strings)
+        ORDER BY deposit_name """.format(db_list=format_strings)
 
         cursor.execute(sql, sql_parms)
         self.conn.close()
         rows = cursor.fetchall()
-        #print('Deposit models rows ')
+        #Convert to JSON format
+        for row in rows:
+            json_deposit = {'deposit_id': row[0], 'deposit_name': row[1]}
+            json_deposits.append(json_deposit)
+            json_deposit = {}
+        return json_deposits
+
+#######################################################################
+# DEPOSITS sjm
+######################################################################
+    def deposits_sjm(self):
+        json_deposits = []
+        cursor = self.conn.cursor()
+        #BOGS DOWN IF TOO MANY DEPOSITS, MUST LIMIT SELECTION
+        sql = """SELECT deposit_id, deposit_name
+        FROM deposit
+        WHERE database_name = 'sjm'
+        ORDER BY deposit_name """
+
+        cursor.execute(sql)
+        self.conn.close()
+        rows = cursor.fetchall()
+        print('In deposits_sjm')
         #Convert to JSON format
         for row in rows:
             json_deposit = {'deposit_id': row[0], 'deposit_name': row[1]}
@@ -205,7 +224,7 @@ class Queries():
         sql = """SELECT DISTINCT d.deposit_id, d.deposit_name,
                 d.latitude, d.longitude, s.state,
                 c1.country, c2.county, dis.district_name,
-                p.pounds_u3o8, p.grade, d.database_name
+                p.pounds_u3o8, p.grade, d.database_name, d.deposit_aliases, dis.district_name
             FROM deposit d
             LEFT JOIN district_to_deposit dd
                 ON dd.deposit_id = d.deposit_id
@@ -220,12 +239,13 @@ class Queries():
         cursor.execute(sql, sql_parms)
         self.conn.close()
         rows = cursor.fetchall()
+
         #Convert to JSON format
         for row in rows:
             json_deposit = {'deposit_id':row[0], 'deposit_name':row[1],
                 'latitude':row[2], 'longitude':row[3],
                 'state':row[4], 'country':row[5], 'county':row[6],
-                'district_name':row[7], 'pounds_u3o8':row[8], 'grade':row[9], 'database_name':row[10]}
+                'district_name':row[7], 'pounds_u3o8':row[8], 'grade':row[9], 'database_name':row[10], 'aliases':row[11]}
             json_deposits.append(json_deposit)
             json_deposit = {}
 
@@ -251,7 +271,6 @@ class Queries():
             LEFT JOIN production p ON p.deposit_id = d.deposit_id
             WHERE (d.database_name = %s)
             ORDER BY d.deposit_name """
-        #print('Models: SQL ', sql)
         cursor.execute(sql, databaseName)
         self.conn.close()
         rows = cursor.fetchall()
@@ -270,7 +289,6 @@ class Queries():
 # DEPOSITS BY COUNTY
 ######################################################################
     def deposits_by_county(self, county_id, state_id):
-        #print('type county_id ', type(county_id))
         try:
             usrDatabases = session['usrDatabases']
         except:
@@ -289,7 +307,8 @@ class Queries():
         sql = """SELECT DISTINCT d.deposit_id, d.deposit_name,
                 d.latitude, d.longitude, s.state,
                 c1.country, c.county,
-                p.pounds_u3o8, p.grade, d.database_name, dis.district_name
+                p.pounds_u3o8, p.grade, d.database_name, dis.district_name,
+                d.deposit_aliases
             FROM deposit d
             LEFT JOIN county c ON c.county_id = d.county_id
             LEFT JOIN state s ON s.state_id = d.state_id
@@ -299,10 +318,7 @@ class Queries():
             LEFT JOIN district dis ON dis.district_id = dd.district_id
             WHERE c.county_id = %s AND s.state_id = %s AND d.database_name IN ({db_list})
             ORDER BY d.deposit_id """.format(db_list=format_strings)
-        #print('SQL ', sql)
-        #print('county_id, state_id ', county_id,  ' ', state_id)
         cursor.execute(sql, sql_parms)
-        #print('SQL executed')
         self.conn.close()
         rows = cursor.fetchall()
         #Convert to JSON format
@@ -311,65 +327,109 @@ class Queries():
                 'latitude':row[2], 'longitude':row[3],
                 'state':row[4], 'country':row[5], 'county':row[6],
                 'pounds_u3o8':row[7], 'grade':row[8], 'database_name':row[9],
-                'district_name':row[10]}
+                'district_name':row[10], 'aliases':row[11]}
             json_deposits.append(json_deposit)
             json_deposit = {}
 
         return json_deposits
 
 #######################################################################
-# DEPOSITS BY DEPOSIT
+# DEPOSITS BY COUNTRY
 ######################################################################
-    def deposits_by_deposit(self, deposit_ids):
-        #GET INDIVIDUAL IDS AS ARRAY OF STRINGS
-        list_of_ids = deposit_ids.split('!')
-        list_of_ids.remove('')
-        #print('list_of_ids ', list_of_ids, ' ', type(list_of_ids))
-        format_strings = ','.join(['%s'] * len(list_of_ids))
-        #print('format_strings ', format_strings)
-        tuple_of_ids = tuple(list_of_ids)
+    def deposits_by_country(self, country_id):
+        try:
+            usrDatabases = session['usrDatabases']
+        except:
+            usrDatabases = ['SJM']
+
+        session['usrDatabases'] = usrDatabases
+        sql_parms = [country_id]
+        sql_parms.extend(usrDatabases)
+        format_strings = ','.join(['%s'] * len(usrDatabases))
+
         json_deposits = []
         cursor = self.conn.cursor()
         sql = """SELECT DISTINCT d.deposit_id, d.deposit_name,
                 d.latitude, d.longitude, s.state,
-                c1.country, c2.county,
-                p.pounds_u3o8, p.grade, d.database_name
+                c1.country, c.county,
+                p.pounds_u3o8, p.grade, d.database_name, dis.district_name,
+                d.deposit_aliases
             FROM deposit d
+            LEFT JOIN county c ON c.county_id = d.county_id
             LEFT JOIN state s ON s.state_id = d.state_id
-            INNER JOIN country c1 ON c1.country_id = d.country_id
-            LEFT JOIN county c2 ON c2.county_id = d.county_id
+            LEFT JOIN country c1 ON c1.country_id = d.country_id
             LEFT JOIN production p ON p.deposit_id = d.deposit_id
-            WHERE (d.deposit_id IN (%s))
-            ORDER BY d.deposit_id """ % format_strings
-        #print('SQL in models ', sql)
-        cursor.execute(sql, tuple_of_ids)
-        #cursor.execute(sql, deposit_ids)
+            LEFT JOIN district_to_deposit dd ON dd.deposit_id = d.deposit_id
+            LEFT JOIN district dis ON dis.district_id = dd.district_id
+            WHERE c1.country_id = %s AND d.database_name IN ({db_list})
+            ORDER BY d.deposit_id """.format(db_list=format_strings)
+        cursor.execute(sql, sql_parms)
         self.conn.close()
         rows = cursor.fetchall()
-        #print('rows in models ', rows)
         #Convert to JSON format
         for row in rows:
             json_deposit = {'deposit_id':row[0], 'deposit_name':row[1],
                 'latitude':row[2], 'longitude':row[3],
                 'state':row[4], 'country':row[5], 'county':row[6],
-                'pounds_u3o8':row[7], 'grade':row[8], 'database_name':row[9]}
+                'pounds_u3o8':row[7], 'grade':row[8], 'database_name':row[9],
+                'district_name':row[10], 'aliases':row[11]}
             json_deposits.append(json_deposit)
             json_deposit = {}
 
         return json_deposits
 
+#######################################################################
+# DEPOSIT BY DEPOSIT
+######################################################################
+    def deposit_by_deposit(self, deposit_id):
+        #GET INDIVIDUAL IDS AS ARRAY OF STRINGS
+        print('In model: deposit_id', deposit_id)
+        # list_of_ids = deposit_ids.split('!')
+        # list_of_ids.remove('')
+        # format_strings = ','.join(['%s'] * len(list_of_ids))
+        # tuple_of_ids = tuple(list_of_ids)
+        json_deposits = []
+        cursor = self.conn.cursor()
+        sql = """SELECT DISTINCT d.deposit_id, d.deposit_name,
+                d.latitude, d.longitude, s.state,
+                c1.country, c2.county,
+                p.pounds_u3o8, p.grade, d.database_name, dis.district_name
+            FROM deposit d
+            LEFT JOIN state s ON s.state_id = d.state_id
+            INNER JOIN country c1 ON c1.country_id = d.country_id
+            LEFT JOIN county c2 ON c2.county_id = d.county_id
+            LEFT JOIN production p ON p.deposit_id = d.deposit_id
+            LEFT JOIN district_to_deposit dd ON dd.deposit_id = d.deposit_id
+            LEFT JOIN district dis ON dis.district_id = dd.district_id
+            WHERE (d.deposit_id = %s)
+            ORDER BY d.deposit_id """
+
+        cursor.execute(sql, deposit_id)
+        #cursor.execute(sql, deposit_ids)
+        self.conn.close()
+        row = cursor.fetchone()
+        #print('In model: rows', rows)
+        #Convert to JSON format
+        #for row in rows:
+        json_deposit = {'deposit_id':row[0], 'deposit_name':row[1],
+                'latitude':row[2], 'longitude':row[3],
+                'state':row[4], 'country':row[5], 'county':row[6],
+                'pounds_u3o8':row[7], 'grade':row[8], 'database_name':row[9], 'district_name':row[10]}
+            #json_deposits.append(json_deposit)
+            #json_deposit = {}
+        print('json_deposit', json_deposit)
+        return json_deposit
+
 ######################################################################
 # DEPOSITS SEARCH
 ######################################################################
     def deposits_search(self, usrFrag):
-        #print('Models usrFrag: ', usrFrag)
         json_deposits = []
         cursor = self.conn.cursor()
         usrFragSQL1 = '%' + '' + '%'
         usrFragSQL2 = '%' + '' + '%'
         usrFragSQL3 = '%' + '' + '%'
         usrFragSplit = usrFrag.split(',')
-        #print('Models usrFragSplit: ', usrFragSplit)
         if len(usrFragSplit) == 1:
             usrFragSQL1 = '%' + usrFragSplit[0] + '%'
         if len(usrFragSplit) == 2:
@@ -379,7 +439,6 @@ class Queries():
             usrFragSQL1 = '%' + usrFragSplit[0] + '%'
             usrFragSQL2 = '%' + usrFragSplit[1] + '%'
             usrFragSQL3 = '%' + usrFragSplit[2] + '%'
-        #print('Models usrFragSQLs: ', usrFragSQL1, usrFragSQL2, usrFragSQL3)
         sql = """SELECT DISTINCT d.deposit_id, d.deposit_name,
                 d.latitude, d.longitude, s.state,
                 c1.country, c.county, dis.district_name,
@@ -394,9 +453,7 @@ class Queries():
             LEFT JOIN production p ON p.deposit_id = d.deposit_id
             WHERE ((d.deposit_name like %s and d.deposit_name like %s and d.deposit_name like %s) OR d.deposit_id like %s)
             ORDER BY d.deposit_name """
-        #print('sql: ', sql)
         cursor.execute(sql, (usrFragSQL1, usrFragSQL2, usrFragSQL3, usrFragSQL1))
-        #print('sql2: ', sql)
         self.conn.close()
         rows = cursor.fetchall()
         #Convert to JSON format
@@ -414,7 +471,6 @@ class Queries():
 # DEPOSITS - LOAD EDIT PAGE
 ######################################################################
     def deposits_edit_load(self, id):
-        #print('In model', id)
         json_deposits = []
         cursor = self.conn.cursor()
         sql = """SELECT d.deposit_id, d.deposit_name, d.deposit_aliases,
@@ -435,7 +491,6 @@ class Queries():
         rows = cursor.fetchall()
         #Convert to JSON format
         for row in rows:
-            #print('In model row', row)
             json_deposit = {'deposit_id': row[0], 'deposit_name': row[1],
                 'deposit_aliases': row[2], 'latitude': row[3], 'longitude': row[4],
                 'database_name': row[5], 'production': row[6], 'grade': row[7],
@@ -526,7 +581,6 @@ class Queries():
         self.conn.close()
 
     def deposits_edit_submit_districts(self, deposit_id, district_ids):
-        #print('in models, district_ids ', district_ids)
         cursor = self.conn.cursor()
         sql = """DELETE
            FROM district_to_deposit
@@ -549,7 +603,6 @@ class Queries():
 
         lat_dbl = float(latitude)
         lon_dbl = float(longitude)
-        #database_name = 'SJM'
 
         cursor = self.conn.cursor()
         # Find a new deposit_id
@@ -558,8 +611,6 @@ class Queries():
         cursor.execute(sql)
         maxId = cursor.fetchone()
         newId = maxId[0] + 1
-        print("newId", newId)
-        #cursor.close()
 
         ##################################
         # LOAD Database
@@ -606,13 +657,11 @@ class Queries():
 #######################################################################
     def deposits_edit_delete(self, deposit_id):
 
-        #print("models: deposit_id ", deposit_id)
         cursor = self.conn.cursor()
         # Delete the current reference
         sql = """DELETE
                 FROM deposit
                 WHERE deposit_id = %s """
-        #print("models: refid ", refid)
         cursor.execute(sql, deposit_id)
         self.conn.commit()
         sql = """DELETE
@@ -695,7 +744,6 @@ class Queries():
         cursor.execute(sql, category_id)
         self.conn.close()
         rows = cursor.fetchall()
-        #print('Category rows ', rows)
         #Convert to JSON format
         for row in rows:
             json_ref = {'reference_id': row[0], 'reference': row[1],
@@ -708,7 +756,6 @@ class Queries():
 # REFERENCES BY SPECIALCOLLECTION
 ######################################################################
     def references_by_specialCollection(self, spcol_id):
-        print('Model spcol_id is: ')
         json_refs = []
         cursor = self.conn.cursor()
         sql = """SELECT r.reference_id, r.reference, r.filename, r.url
@@ -738,7 +785,6 @@ class Queries():
         usrFragSQL2 = '%' + '' + '%'
         usrFragSQL3 = '%' + '' + '%'
         usrFragSplit = usrFrag.split(',')
-        # print(usrFragSplit)
         if len(usrFragSplit) == 1:
             usrFragSQL1 = '%' + usrFragSplit[0] + '%'
         if len(usrFragSplit) == 2:
@@ -790,7 +836,6 @@ class Queries():
     def categories_by_reference(self, refid):
         json_refs = []
         cursor = self.conn.cursor()
-        #print('in models ', refid)
         sql = """SELECT r.category_id, c.category_name, c.category_description
             FROM category_to_reference r
             INNER JOIN category c ON c.category_id = r.category_id
@@ -800,7 +845,6 @@ class Queries():
         rows = cursor.fetchall()
         #Convert to JSON format
         for row in rows:
-            #print('category row1  ', row[1])
             json_ref = {'category_id': row[0],
                 'category_name': row[1], 'category_description': row[2]}
             json_refs.append(json_ref)
@@ -813,7 +857,6 @@ class Queries():
     def specialCollections_by_reference(self, refid):
         json_refs = []
         cursor = self.conn.cursor()
-        #print('in models specialCollections_by_reference refid ', refid)
         sql = """SELECT r.spcol_id, s.spcol_name, s.spcol_description
             FROM specialCollection_to_reference r
             INNER JOIN special_collection s ON s.spcol_id = r.spcol_id
@@ -823,7 +866,6 @@ class Queries():
         rows = cursor.fetchall()
         #Convert to JSON format
         for row in rows:
-            #print('row  ', row)
             json_ref = {'special_id': row[0],
                 'special_name': row[1], 'special_description': row[2]}
             json_refs.append(json_ref)
@@ -883,14 +925,11 @@ class Queries():
         return refid
 
     def references_edit_delete(self, refid):
-
-        #print("models: refid ", refid)
         cursor = self.conn.cursor()
         # Delete the current reference
         sql = """DELETE
                 FROM reference
                 WHERE reference_id = %s """
-        #print("models: refid ", refid)
         cursor.execute(sql, refid)
         self.conn.commit()
         sql = """DELETE
@@ -908,7 +947,6 @@ class Queries():
 
 
     def references_edit_submit_districts(self, refid, district_ids):
-        #print('in models, district_ids ', district_ids)
         cursor = self.conn.cursor()
         sql = """DELETE
            FROM district_to_reference
@@ -925,7 +963,6 @@ class Queries():
         cursor.close()
 
     def references_edit_submit_categories(self, refid, category_ids):
-        #print('in models, category_ids ', category_ids)
         cursor = self.conn.cursor()
         sql = """DELETE
            FROM category_to_reference
@@ -942,7 +979,6 @@ class Queries():
         cursor.close()
 
     def references_edit_submit_specials(self, refid, special_ids):
-        #print('in models: refid, special_ids ', refid, special_ids)
         cursor = self.conn.cursor()
         sql = """DELETE
            FROM specialCollection_to_reference
@@ -977,7 +1013,6 @@ class Queries():
         cursor.execute(sql, id)
         self.conn.close()
         row = cursor.fetchone()
-        #print('in models: row[2] ', row[2])
         #Convert to JSON format
         json_ref = {'url': row[2]}
         return json_ref
