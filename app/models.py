@@ -194,7 +194,7 @@ class Queries():
         cursor.execute(sql)
         self.conn.close()
         rows = cursor.fetchall()
-        print('In deposits_sjm')
+        #print('In deposits_sjm')
         #Convert to JSON format
         for row in rows:
             json_deposit = {'deposit_id': row[0], 'deposit_name': row[1]}
@@ -379,11 +379,56 @@ class Queries():
         return json_deposits
 
 #######################################################################
+# DEPOSITS BY STATE
+######################################################################
+    def deposits_by_state(self, state_id):
+        try:
+            usrDatabases = session['usrDatabases']
+        except:
+            usrDatabases = ['SJM']
+
+        session['usrDatabases'] = usrDatabases
+        sql_parms = [state_id]
+        sql_parms.extend(usrDatabases)
+        format_strings = ','.join(['%s'] * len(usrDatabases))
+
+        json_deposits = []
+        cursor = self.conn.cursor()
+        sql = """SELECT DISTINCT d.deposit_id, d.deposit_name,
+                d.latitude, d.longitude, s.state,
+                c1.country, c.county,
+                p.pounds_u3o8, p.grade, d.database_name, dis.district_name,
+                d.deposit_aliases
+            FROM deposit d
+            LEFT JOIN county c ON c.county_id = d.county_id
+            LEFT JOIN state s ON s.state_id = d.state_id
+            LEFT JOIN country c1 ON c1.country_id = d.country_id
+            LEFT JOIN production p ON p.deposit_id = d.deposit_id
+            LEFT JOIN district_to_deposit dd ON dd.deposit_id = d.deposit_id
+            LEFT JOIN district dis ON dis.district_id = dd.district_id
+            WHERE s.state_id = %s AND d.database_name IN ({db_list})
+            ORDER BY d.deposit_id """.format(db_list=format_strings)
+        cursor.execute(sql, sql_parms)
+        self.conn.close()
+        rows = cursor.fetchall()
+        #Convert to JSON format
+        for row in rows:
+            json_deposit = {'deposit_id':row[0], 'deposit_name':row[1],
+                'latitude':row[2], 'longitude':row[3],
+                'state':row[4], 'country':row[5], 'county':row[6],
+                'pounds_u3o8':row[7], 'grade':row[8], 'database_name':row[9],
+                'district_name':row[10], 'aliases':row[11]}
+            json_deposits.append(json_deposit)
+            json_deposit = {}
+
+        return json_deposits
+
+#######################################################################
 # DEPOSIT BY DEPOSIT
 ######################################################################
     def deposit_by_deposit(self, deposit_id):
         #GET INDIVIDUAL IDS AS ARRAY OF STRINGS
-        print('In model: deposit_id', deposit_id)
+        #print('In model: deposit_id', deposit_id)
         # list_of_ids = deposit_ids.split('!')
         # list_of_ids.remove('')
         # format_strings = ','.join(['%s'] * len(list_of_ids))
@@ -417,7 +462,7 @@ class Queries():
                 'pounds_u3o8':row[7], 'grade':row[8], 'database_name':row[9], 'district_name':row[10]}
             #json_deposits.append(json_deposit)
             #json_deposit = {}
-        print('json_deposit', json_deposit)
+        #print('json_deposit', json_deposit)
         return json_deposit
 
 ######################################################################
@@ -541,7 +586,7 @@ class Queries():
 #######################################
 # DEPOSITS EDIT - SAVE
 #######################################
-    def deposits_edit_submit(self, deposit_id, deposit_name, aliases, latitude, longitude, database_name, production, grade, geologic_unit, ore_type, discovery_year, country_id, state_id, county_id, ref_ids, mine_type, commodities):
+    def deposits_edit_save(self, deposit_id, deposit_name, aliases, latitude, longitude, database_name, production, grade, geologic_unit, ore_type, discovery_year, country_id, state_id, county_id, ref_ids, mine_type, commodities):
 
         lat_dbl = float(latitude)
         lon_dbl = float(longitude)
@@ -580,7 +625,7 @@ class Queries():
 
         self.conn.close()
 
-    def deposits_edit_submit_districts(self, deposit_id, district_ids):
+    def deposits_edit_save_districts(self, deposit_id, district_ids):
         cursor = self.conn.cursor()
         sql = """DELETE
            FROM district_to_deposit
@@ -876,6 +921,7 @@ class Queries():
 # REFERENCE - EDIT PAGE FOR ALL REFERENCES
 ######################################################################
     def references_edit(self, id):
+        print('references_edit in models, refid:  ', id)
         json_refs = []
         cursor = self.conn.cursor()
         sql = """SELECT *
@@ -893,19 +939,29 @@ class Queries():
             json_ref = {}
         return json_refs
 
-    #######################################
+    ###############################################################################
+    ###############################################################################
     # REFERENCE EDIT - UPDATE DATABASE
-    #######################################
-    def references_edit_submit(self, refid, reference, source, filename, url, yn):
-
+    ###############################################################################
+    ###############################################################################
+    def references_newRefid(self):
+        # Get a new reference_id
+        #print('refid1 in models: ')
         cursor = self.conn.cursor()
-        sql = """UPDATE reference
-            SET reference = %s, source = %s, filename = %s, url = %s, verified = %s
-            WHERE reference_id = %s"""
-        cursor.execute(sql, (reference, source, filename, url, yn, refid))
+        sql = """SELECT MAX(reference_id)
+           FROM reference"""
+        cursor.execute(sql)
+        tup = cursor.fetchone()
+        newRefid = str(tup[0] + 1)
         self.conn.close()
+        cursor.close()
+
+        #print('newRefid in models, refid:  ', newRefid)
+
+        return newRefid
 
     def references_edit_new(self, reference, source, filename, url, yn):
+        print('references_edit_new in models, refid:  ', refid)
         # Get a new reference_id
         cursor = self.conn.cursor()
         sql = """SELECT MAX(reference_id)
@@ -925,28 +981,77 @@ class Queries():
         return refid
 
     def references_edit_delete(self, refid):
+        print('references_edit_delete in models, refid:  ', refid)
         cursor = self.conn.cursor()
+        #print('In references_delete')
         # Delete the current reference
         sql = """DELETE
                 FROM reference
                 WHERE reference_id = %s """
         cursor.execute(sql, refid)
         self.conn.commit()
+
         sql = """DELETE
                 FROM district_to_reference
                 WHERE reference_id = %s """
         cursor.execute(sql, refid)
         self.conn.commit()
+
         sql = """DELETE
                 FROM category_to_reference
                 WHERE reference_id = %s """
         cursor.execute(sql, refid)
         self.conn.commit()
+
+        sql = """DELETE
+                FROM specialCollection_to_reference
+                WHERE reference_id = %s """
+        cursor.execute(sql, refid)
+        self.conn.commit()
+
+        sql = """SELECT MAX(reference_id)
+           FROM reference"""
+        cursor.execute(sql)
+        tup = cursor.fetchone()
+        refid = str(tup[0] + 1)
+
         self.conn.close()
         cursor.close()
 
+        return refid
 
-    def references_edit_submit_districts(self, refid, district_ids):
+    ###############################################################################
+    ###############################################################################
+    # REFERENCE EDIT - SAVE
+    ###############################################################################
+    ###############################################################################
+    def references_edit_save(self, refid, reference, source, filename, url, yn):
+        print('references_edit_save in models, refid:  ', refid)
+        cursor = self.conn.cursor()
+        #IF THE REFERENCE_ID EXISTS WE UPDATE ELSE WE INSERT
+        sql = """SELECT reference_id
+           FROM reference
+           WHERE reference_id = %s """
+        cursor.execute(sql, (refid))
+        tup = cursor.fetchone()
+
+        if tup == None:
+            print("inserting")
+            sql = """INSERT
+                INTO reference (reference_id, reference, source, filename, url, verified)
+                VALUES(%s, %s, %s, %s, %s, %s)"""
+            cursor.execute(sql, (refid, reference, source, filename, url, yn))
+        else:
+            print("updating")
+            sql = """UPDATE reference
+                 SET reference = %s, source = %s, filename = %s, url = %s, verified = %s
+                 WHERE reference_id = %s"""
+            cursor.execute(sql, (reference, source, filename, url, yn, refid))
+        self.conn.commit()
+        self.conn.close()
+
+    def references_edit_save_districts(self, refid, district_ids):
+        print('references_edit_save_districts in models, refid:  ', refid)
         cursor = self.conn.cursor()
         sql = """DELETE
            FROM district_to_reference
@@ -962,7 +1067,8 @@ class Queries():
              self.conn.commit()
         cursor.close()
 
-    def references_edit_submit_categories(self, refid, category_ids):
+    def references_edit_save_categories(self, refid, category_ids):
+        print('references_edit_save_categories in models, refid:  ', refid)
         cursor = self.conn.cursor()
         sql = """DELETE
            FROM category_to_reference
@@ -978,7 +1084,8 @@ class Queries():
              self.conn.commit()
         cursor.close()
 
-    def references_edit_submit_specials(self, refid, special_ids):
+    def references_edit_save_specials(self, refid, special_ids):
+        print('references_edit_save_specials in models, refid:  ', refid)
         cursor = self.conn.cursor()
         sql = """DELETE
            FROM specialCollection_to_reference

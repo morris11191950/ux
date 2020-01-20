@@ -94,7 +94,7 @@ $("input").on("keydown",function search(e) {
 //   CLICK NEW REFERENCE
 //*************************************************************
 $("#button_new_ref").click(function() {
-     //console.log('New ref button was pressed  ');
+     doAjax_new();
      window.open('http://127.0.0.1:5000/literature/references_edit/0');
 });
 
@@ -551,6 +551,16 @@ var doAjax_references_all = function() {
           }
       });
  };
+
+ //*************************************************************
+ //NEW REFERENCE
+ //*************************************************************
+ var doAjax_new = function() {
+   $.ajax({
+      type: "GET",
+      url: "http://127.0.0.1:5000/literature/edit/references_edit/0",
+    });
+  };
 
  //*************************************************************
  //AJAX CALL TO RETRIEVE URL AND DISPLAY SELECTED PDF

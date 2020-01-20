@@ -33,6 +33,13 @@ def deposits_by_country(country_id):
     j = jsonify(Deposits=jsonStr)
     return j
 
+@maps.route('/maps/deposits_by_state/<int:state_id>')
+def deposits_by_state(state_id):
+    rows = Queries().deposits_by_state(state_id)
+    jsonStr = json.dumps(rows)
+    j = jsonify(Deposits=jsonStr)
+    return j
+
 @maps.route('/maps/deposit_by_deposit/<string:selected_id>')
 def deposit_by_deposit(selected_id):
     print('In maps routes: deposit_by_deposit:selected_id:  ', selected_id)

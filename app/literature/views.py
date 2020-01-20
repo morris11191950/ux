@@ -95,7 +95,13 @@ def references_by_district(district_id):
 
 @literature.route('/literature/references_edit/<refid>')
 def references_edit(refid):
-    #print('refid ', refid)
+    #Get new reference id
+    #print('references_edit1 in views, refid: ', refid)
+    #print('type refid1 in views: ', type(refid))
+    if refid == '0':
+        #print('references_edit2 in views, refid: ', refid)
+        refid = Queries().references_newRefid()
+    #print('references_edit3 in views, refid: ', refid)
     return render_template('literature/edit.html', refid=refid)
 
 @literature.route('/literature/references_search/<id>')
@@ -105,6 +111,11 @@ def references_search(id):
     j = jsonify(Refs=jsonStr)
     return j
 
+##########################################################################
+##########################################################################
+# LITERATURE EDITS
+##########################################################################
+##########################################################################
 @literature.route('/literature/edit/references_edit_load/<refid>')
 def references_edit_load(refid):
     #Query to get the inputs from referenc table
@@ -149,6 +160,7 @@ def references_new():
     yn = request.json['yn']
     district_ids = request.json['district_ids']
     category_ids = request.json['category_ids']
+    special_ids = request.json['special_ids']
 
     #print('yn', yn)
 
@@ -159,8 +171,9 @@ def references_new():
 
     #Query to get the inputs from referenc table
     refid_new = Queries().references_edit_new(reference, source, filename, url, yn)
-    Queries().references_edit_submit_districts(refid_new, district_ids)
-    Queries().references_edit_submit_categories(refid_new, category_ids)
+    #Queries().references_edit_submit_districts(refid_new, district_ids)
+    #Queries().references_edit_submit_categories(refid_new, category_ids)
+    #Queries().references_edit_submit_specials(refid_new, special_ids)
     #print("refid_new ", refid_new)
     return refid_new
 
@@ -171,12 +184,12 @@ def references_delete():
     #print("refid ", refid)
 
     #Query to delete the current reference
-    Queries().references_edit_delete(refid)
+    refid_new = Queries().references_edit_delete(refid)
 
-    return '0'
+    return refid_new
 
-@literature.route('/literature/edit/references_edit_submit', methods=['POST'])
-def references_edit_submit():
+@literature.route('/literature/edit/references_edit_save', methods=['POST'])
+def references_edit_save():
 
     refid = request.json['refid']
     reference = request.json['reference']
@@ -188,18 +201,20 @@ def references_edit_submit():
     category_ids = request.json['category_ids']
     special_ids = request.json['special_ids']
 
-    #print("district_ids: ", district_ids)
-
     if yn == 'yes':
          yn = 'y'
     else:
          yn = 'n'
 
     #Query to get the inputs from referenc table
-    Queries().references_edit_submit(refid, reference, source, filename, url, yn)
-    Queries().references_edit_submit_districts(refid, district_ids)
-    Queries().references_edit_submit_categories(refid, category_ids)
-    Queries().references_edit_submit_specials(refid, special_ids)
+    print("references_edit_save1 in views, refid: ", refid)
+    Queries().references_edit_save(refid, reference, source, filename, url, yn)
+    print("references_edit_save2 in views, refid: ", refid)
+    Queries().references_edit_save_districts(refid, district_ids)
+    print("references_edit_save3 in views, refid: ", refid)
+    Queries().references_edit_save_categories(refid, category_ids)
+    print("references_edit_save4 in views, refid: ", refid)
+    Queries().references_edit_save_specials(refid, special_ids)
     return '0'
 
 @literature.route('/literature/url_pdf/<id>')

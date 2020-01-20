@@ -84,9 +84,10 @@
      </form>
 
      	<div class="edit_buttons">
-     		<button id="submit">Save</button>
+     		<button id="save">Save</button>
      		<button onclick="cancelFunction()">Cancel</button>
-     		<button onclick="newFunction()">New Reference</button>
+     		<!-- <button onclick="newFunction()">New Reference</button> -->
+        <button id="new">New Reference</button>
      		<button  type="button" id="delete">Delete Reference</button>
      	</div>
 
@@ -94,38 +95,53 @@
 
 <script>
 //*************************************************************
-//  CANCEL BUTTON FUNCTIONS
+//  CANCEL BUTTON FUNCTION
 //*************************************************************
 function cancelFunction() {
     // window.location.href = 'http://127.0.0.1:5000/literature';
     location.reload(true);
 };
-function newFunction() {
-     window.open('http://127.0.0.1:5000/literature/references_edit/0');
-     };
+//*************************************************************
+//  NEW REFERENCE BUTTON FUNCTION
+//*************************************************************
+// function newFunction() {
+//      window.open('http://127.0.0.1:5000/literature/references_edit/0');
+//      };
+
 $(document).ready(function() {
 var $refid = $("#dummy").text();
 var category_ids = [];
 var district_ids = [];
 var special_ids = [];
 //*************************************************************
-//  SUBMIT BUTTON FUNCTIONS
+//  save BUTTON FUNCTIONS
 //*************************************************************
-$("#submit").click(function() {
-     doAjax_submit();
+$("#save").click(function() {
+     doAjax_save();
 });
+
+//*************************************************************
+//  NEW REFERENCE BUTTON FUNCTIONS
+//*************************************************************
+$("#new").click(function() {
+     doAjax_new();
+     window.open('http://127.0.0.1:5000/literature/references_edit/0');
+});
+
 //*************************************************************
 //  DELETE BUTTON FUNCTIONS
 //*************************************************************
 $("#delete").click(function() {
     console.log("About to delete");
-    alert("Delete button currently inactive, consider setting verified radio button to 'no'")
+    doAjax_delete();
+    //alert("Delete button currently inactive, consider setting verified radio button to 'no'")
      //doAjax_delete();
 });
 //*************************************************************
 //   DISTRICT SELECTION FROM DROPDOWN
 //*************************************************************
 $("#districts_dropdown").change(function() {
+     console.log("edit.html districts_dropdown: ");
      var selected_id = $(this).children("option:selected").val();
      var selected_district = $(this).children("option:selected").text();
      district_ids.push(selected_id)
@@ -295,9 +311,19 @@ $("#specials_dropdown").change(function() {
       }
   });
   //*************************************************************
+  //NEW REFERENCE
+  //*************************************************************
+  var doAjax_new = function() {
+    $.ajax({
+       type: "GET",
+       url: "http://127.0.0.1:5000/literature/edit/references_edit/0",
+     });
+   };
+  //*************************************************************
   // SAVE THE EDITS
   //*************************************************************
-  var doAjax_submit = function() {
+  var doAjax_save = function() {
+       console.log("edit.html refid ", $refid)
        var data = {};
        data['refid'] = $refid;
        data['reference'] = $("textarea[name='reference']").val();
@@ -311,9 +337,8 @@ $("#specials_dropdown").change(function() {
        if (data['yn'] == undefined) {
             data['yn'] = 'no';
        }
-       console.log("data ", data)
+       console.log("doAjax_save1 in edit.html, $refid ", $refid)
        if ($refid == 0) {
-            //console.log("doAjax_submit, refid is 0 ", $refid);
             //data['yn'] = 'no';
             $.ajax({
               type: "POST",
@@ -322,15 +347,14 @@ $("#specials_dropdown").change(function() {
               data: JSON.stringify(data),
               success: function(refid_new) {
                    $refid = refid_new;
-                   alert("New reference was successful")
+                   alert("New reference was added successfully")
                    }
               });
             } else {
-            //console.log("doAjax_submit, refid is NOT 0 ", $refid)
             $.ajax({
               type: "POST",
               contentType: 'application/json;charset=UTF-8',
-              url: "http://127.0.0.1:5000/literature/edit/references_edit_submit",
+              url: "http://127.0.0.1:5000/literature/edit/references_edit_save",
               data: JSON.stringify(data),
               success: function() {
                    //Add the following alert in final

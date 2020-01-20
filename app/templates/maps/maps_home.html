@@ -10,23 +10,23 @@
 
 {% block body %}
 
-<select style="width:20%"; id="button_districts_map">
+<select style="width:15%"; id="button_districts_map">
       <option></option>
 </select>
 
-<select style="width:20%"; id="button_counties_map">
+<select style="width:15%"; id="button_counties_map">
       <option></option>
 </select>
 
-<select style="width:20%"; id="button_countries_map">
+<select style="width:15%"; id="button_countries_map">
       <option></option>
 </select>
 
-<!-- <select style="width:20%"; id="button_deposits_map" multiple ="multiple">
+<select style="width:15%"; id="button_states_map">
       <option></option>
-</select> -->
+</select>
 
-<select style="width:20%"; id="button_deposit_map">
+<select style="width:15%"; id="button_deposit_map">
       <option></option>
 </select>
 
@@ -105,6 +105,23 @@ $(document).ready(function() {
          }
      });
 
+     //*************************************************************
+     //   AJAX CALL TO RETRIEVE STATES
+     //*************************************************************
+     $.ajax({
+        type: "GET",
+        url: "http://127.0.0.1:5000/literature/states_all",
+        success: function(data) {
+             objects = JSON.parse(data.States)
+             $.each(objects, function(i, object) {
+               $temp = "<option " + "value="  + object.state_id + ">"
+                    + object.state + '</option>'
+                  //console.log('Counties: ajax $temp ', $temp)
+                  $('#button_states_map').append($temp);
+             });
+          }
+      });
+
     //*************************************************************
     //   AJAX CALL TO RETRIEVE DEPOSITS
     //*************************************************************
@@ -166,6 +183,20 @@ $("#button_countries_map").change(function() {
      //console.log('selected_id', selected_id)
      doAjax_getSessionOptions();
      doAjax_deposits_by_country(selected_id);
+});
+
+//*************************************************************
+//   BY_STATE SELECTION
+//*************************************************************
+$selectElement =  $("#button_states_map").select2({
+  placeholder : 'Select a State'
+});
+
+$("#button_states_map").change(function() {
+     var selected_id = $(this).children("option:selected").val();
+     //console.log('selected_id', selected_id)
+     doAjax_getSessionOptions();
+     doAjax_deposits_by_state(selected_id);
 });
 
 //*************************************************************
@@ -633,6 +664,158 @@ var doAjax_deposits_by_district = function(inputValue) {
            }
        });
    };
+
+   //*************************************************************
+   //AJAX CALL TO RETRIEVE DEPOSIT COORDS FOR SELECTED STATE
+   //*************************************************************
+   var doAjax_deposits_by_state = function(state_id) {
+        //var spt = state_county_ids.split(':')
+        //var state_id = parseInt(spt[0])
+        //var country_id = parseInt(spt[1])
+        var deposit_ids = []
+        var deposit_ids_uniq = []
+        var deposit_names = []
+        var lats = []
+        var lons = []
+        var labels = []
+        var descriptions = []
+        var databases = []
+        var districts_all = []
+        var districts= []
+        const indexOfAll = (arr, val) => arr.reduce((acc, el, i) => (el === val ? [...acc, i] : acc), []);
+
+        //Main complication is arranging entries for last object
+        $.ajax({
+           type: "GET",
+           url: "http://127.0.0.1:5000/maps/deposits_by_state/" + state_id,
+           success: function(data) {
+            objects = JSON.parse(data.Deposits)
+
+            $.each(objects, function(i, object) {
+                 deposit_ids.push(object.deposit_id)
+                 districts_all.push(object.district_name)
+                 deposit_ids_uniq.push(object.deposit_id)
+            });
+
+            deposit_ids_uniq = jQuery.uniqueSort(deposit_ids_uniq)
+
+            $.each(deposit_ids_uniq, function(i, deposit_id_uniq) {
+              inds = indexOfAll(deposit_ids, deposit_id_uniq)
+              for (i = 0; i < inds.length; i++) {
+                index = inds[i]
+                district = districts_all[index]
+                districts.push(district)
+              }
+
+              object = objects[inds[0]]
+
+              aliases = object.aliases
+              country = object.country
+              county = object.county
+              database = object.database_name
+              deposit_name = object.deposit_name
+              grade = object.grade
+              latitude = object.latitude
+              longitude = object.longitude
+              pounds_u3o8 = object.pounds_u3o8
+              state = object.state
+
+              description = country
+              label = deposit_id_uniq + ': ' + deposit_name
+
+              if (state) {
+                 description =  state + ', ' + description
+                   }
+              if (county) {
+                  label = label + ': ' + county
+                  }
+
+              description = description + '::: Aliases = ' + aliases + ': Grade = ' + grade + ': Pounds U3O8 = ' + pounds_u3o8 + ': Database = ' + database + ' :Districts = ' + districts
+
+              //console.log('description', description)
+
+              deposit_names.push(deposit_name);
+              lats.push(latitude);
+              lons.push(longitude);
+              labels.push(label);
+              databases.push(database)
+              descriptions.push(description)
+
+              districts = []
+
+            });
+
+           },
+            complete: function(){
+
+                $('#cesiumContainer').empty()
+
+                Cesium.Ion.defaultAccessToken = '{{CESIUM_API_KEY}}';
+
+                var esri = new Cesium.ArcGisMapServerImageryProvider({
+                  url : 'https://services.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/'
+                });
+                //var viewer = new Cesium.Viewer('cesiumContainer');
+                var viewer = new Cesium.Viewer('cesiumContainer', {
+                  imageryProvider : esri
+                });
+
+                var showText_tf = false
+                if  (usrMapLabels_yn == 'y'){
+                  showText_tf = true
+                }
+
+                for (var i = 0; i < deposit_names.length; i++) {
+                     //console.log('databases[i] ', databases[i])
+                     database = databases[i]
+                     if (database == 'sjm'){
+                       //symColor = new Cesium.Color(255,0,0,0.0)
+                       symColor = Cesium.Color.RED
+                       symOutlineColor = Cesium.Color.BLACK
+                       symSize = 7
+                       symOutlineSize = 2
+                     } else if (database == 'drum') {
+                       symColor = Cesium.Color.BLUE
+                       symOutlineColor = Cesium.Color.WHITE
+                       symSize = 7
+                       symOutlineSize = 2
+                     } else {
+                       symColor = Cesium.Color.WHITE
+                       symOutlineColor = Cesium.Color.BLACK
+                       symSize = 7
+                       symOutlineSize = 2
+                     }
+
+                     //console.log('database, symColor ', database, ' ', symColor)
+
+                     var myDistrict = viewer.entities.add({
+                         name : labels[i],
+                         position : Cesium.Cartesian3.fromDegrees(lons[i], lats[i]),
+                         point : {
+                             pixelSize : symSize,
+                             color : symColor,
+                             outlineColor : symOutlineColor,
+                             fill : false,
+                             outlineWidth : symOutlineSize
+                         },
+                         description: descriptions[i],
+                         label : {
+                             show: showText_tf,
+                             text : deposit_names[i],
+                             font : '14pt monospace',
+                             style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+                             outlineWidth : 2,
+                             verticalOrigin : Cesium.VerticalOrigin.BOTTOM,
+                             pixelOffset : new Cesium.Cartesian2(0, -9)
+                         }
+                     });
+                 }
+
+                viewer.zoomTo(viewer.entities);
+
+            }
+        });
+    };
 
   //*************************************************************
   //AJAX CALL TO RETRIEVE DEPOSIT COORDS FOR SELECTED DEPOSIT,
