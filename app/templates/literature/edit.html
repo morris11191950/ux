@@ -75,18 +75,18 @@
 
           <div>
                <span style="padding:0">Verified?</span>
-               <div style="margin-left:100px">
-                    Yes<input type="radio" style="margin:0 -30px 0 0;"
+               <div>
+                    Yes<input type="radio"
                               name="yn" value="yes"/>
-                    No<input type="radio" name="yn" value="no"/>
+                    No<input type="radio"
+                              name="yn" value="no"/>
                </div>
-          </div><br>
+          </div>
      </form>
 
      	<div class="edit_buttons">
      		<button id="save">Save</button>
      		<button onclick="cancelFunction()">Cancel</button>
-     		<!-- <button onclick="newFunction()">New Reference</button> -->
         <button id="new">New Reference</button>
      		<button  type="button" id="delete">Delete Reference</button>
      	</div>
@@ -98,16 +98,11 @@
 //  CANCEL BUTTON FUNCTION
 //*************************************************************
 function cancelFunction() {
-    // window.location.href = 'http://127.0.0.1:5000/literature';
     location.reload(true);
 };
 //*************************************************************
 //  NEW REFERENCE BUTTON FUNCTION
 //*************************************************************
-// function newFunction() {
-//      window.open('http://127.0.0.1:5000/literature/references_edit/0');
-//      };
-
 $(document).ready(function() {
 var $refid = $("#dummy").text();
 var category_ids = [];
@@ -134,8 +129,6 @@ $("#new").click(function() {
 $("#delete").click(function() {
     console.log("About to delete");
     doAjax_delete();
-    //alert("Delete button currently inactive, consider setting verified radio button to 'no'")
-     //doAjax_delete();
 });
 //*************************************************************
 //   DISTRICT SELECTION FROM DROPDOWN
